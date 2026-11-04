@@ -389,6 +389,11 @@
             "Stage and commit with a message."
           ],
           "description": "What \"Accept All Changes\" does for an agent session."
+        },
+        "zedLayout.keymap.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable Zed-style keyboard shortcuts for Zed Layout commands. When disabled, no default VS Code shortcuts are overridden."
         }
       }
     },
@@ -615,7 +620,9 @@
           "when": "false"
         }
       ]
-    }
+    },
+    "keybindings": [],
+    "walkthroughs": []
   },
   "scripts": {
     "vscode:prepublish": "npm run build -- --production",

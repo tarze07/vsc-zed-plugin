@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 
 import * as agents from './agents';
+import * as keymap from './keymap';
 import * as layout from './layout';
 import * as profile from './profile';
 import * as review from './review';
@@ -22,6 +23,7 @@ export function activate(context: vscode.ExtensionContext): void {
   worktrees.register(context, sessions);
   review.register(context, sessions);
   views.register(context, sessions);
+  keymap.register(context);
 }
 
 export function deactivate(): void {
