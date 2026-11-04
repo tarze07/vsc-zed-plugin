@@ -235,7 +235,9 @@ export function createStatusTracker(
     }),
     vscode.window.onDidEndTerminalShellExecution((e) => {
       const found = entryForTerminal(e.terminal);
-      if (!found || found[1].execution !== e.execution) {
+      // Also accept the end of an execution we never saw start: a session adopted after a
+      // window reload (#16) whose agent was already running before the reload.
+      if (!found || (found[1].execution !== undefined && found[1].execution !== e.execution)) {
         return;
       }
       found[1].execution = undefined;
