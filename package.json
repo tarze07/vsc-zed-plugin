@@ -388,7 +388,7 @@
             "Stage all changes (git add).",
             "Stage and commit with a message."
           ],
-          "description": "What \"Accept All Changes\" does in an agent worktree."
+          "description": "What \"Accept All Changes\" does for an agent session."
         }
       }
     },
@@ -629,7 +629,7 @@
     "pretest": "npm run compile-tests && npm run build",
     "test": "vscode-test",
     "package": "vsce package --no-dependencies",
-    "test:unit": "npm run compile-tests && mocha --ui tdd out/test/layoutPreset.test.js out/test/layoutBackup.test.js out/test/themeContrast.test.js out/test/typography.test.js out/test/agentRegistry.test.js out/test/agentsViewModel.test.js out/test/statusMachine.test.js out/test/worktreeModel.test.js out/test/worktreeService.test.js out/test/profileFile.test.js out/test/reviewService.test.js",
+    "test:unit": "npm run compile-tests && mocha --ui tdd out/test/layoutPreset.test.js out/test/layoutBackup.test.js out/test/themeContrast.test.js out/test/typography.test.js out/test/agentRegistry.test.js out/test/agentsViewModel.test.js out/test/statusMachine.test.js out/test/worktreeModel.test.js out/test/worktreeService.test.js out/test/profileFile.test.js out/test/reviewService.test.js out/test/reviewModel.test.js",
     "themes:generate": "node scripts/generate-themes.mjs && prettier --write themes",
     "themes:contrast": "npm run compile-tests && node scripts/contrast-report.mjs",
     "profile:generate": "npm run compile-tests && node scripts/generate-profile.mjs"

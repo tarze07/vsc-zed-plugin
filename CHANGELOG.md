@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - Agent registry (`zedLayout.agents`, defaults: Claude Code, Codex, Agy, Kilo Code) and `New Agent Session` opening agents as editor-tab terminals (#6).
 - Agents view with per-status icons, session actions and an attention badge (#7).
 - Session status detection via shell integration (`starting` / `running` / `waiting` / `exited`) with notifications (#8).
+- Agent Changes view: per-session changes vs base, multi-diff, accept (stage) / reject (revert to base) per file, selection or all, commit, merge agent branch into base (#10).
 - VS Code profile export: `profiles/zed-like.code-profile` and command `Save Zed Layout as Profile File...` (#13).
 - Agent sessions in `git worktree`: create, open in new window, compare with base (multi-diff), safe removal (#9).
 

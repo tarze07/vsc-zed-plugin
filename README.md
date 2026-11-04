@@ -7,7 +7,7 @@ sesji terminala, opcjonalnie w izolowanym `git worktree`.
 
 Pełny plan, zakres i etapy prac: [docs/PLAN.md](docs/PLAN.md).
 
-> **Status:** M2 — panel agentów i worktree. Przegląd zmian agentów (Review) w planach (M3).
+> **Status:** M3 — panel agentów, worktree i przegląd zmian. Dalej: skróty, walkthrough i publikacja (M4).
 
 ## Funkcje
 
@@ -27,12 +27,17 @@ Pełny plan, zakres i etapy prac: [docs/PLAN.md](docs/PLAN.md).
 - **Worktree** — **New Agent Session in Worktree** tworzy `git worktree` na nowej gałęzi
   (`agent/<agent>-<id>`), uruchamia w nim agenta; porównanie z bazą w multi-diff, bezpieczne
   usuwanie.
+- **Widok „Agent Changes”** — pliki zmienione przez każdą sesję względem bazy (dla worktree: punkt
+  odgałęzienia od gałęzi bazowej), wszystkie zmiany w jednym multi-diffie, Accept (stage) /
+  Reject (przywrócenie bazy) per plik, zaznaczenie lub całość, commit i scalenie gałęzi agenta do
+  bazowej.
 
 Szczegóły: [docs/LAYOUT.md](docs/LAYOUT.md) (lista zmienianych ustawień, backup/restore),
 [docs/THEMES.md](docs/THEMES.md) (paleta, kontrast, fonty), [docs/AGENTS.md](docs/AGENTS.md)
 (konfiguracja agentów), [docs/VIEWS.md](docs/VIEWS.md) (widok Agents, przeniesienie do Secondary
 Side Bar), [docs/STATUS.md](docs/STATUS.md) (wykrywanie statusu) i
-[docs/WORKTREES.md](docs/WORKTREES.md) (sesje w worktree).
+[docs/WORKTREES.md](docs/WORKTREES.md) (sesje w worktree) oraz [docs/REVIEW.md](docs/REVIEW.md)
+(przegląd zmian).
 
 ### Profil VS Code (alternatywa dla „Apply”)
 
