@@ -49,7 +49,8 @@ suite('worktree service (git CLI)', function () {
   });
 
   setup(async () => {
-    tmp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'zed-wt-')));
+    // `.native` expands Windows 8.3 short names (e.g. RUNNER~1) so paths match what git reports.
+    tmp = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), 'zed-wt-')));
     repo = path.join(tmp, 'my repo');
     fs.mkdirSync(repo);
     await git(['init', '--quiet'], { cwd: repo });
@@ -62,7 +63,8 @@ suite('worktree service (git CLI)', function () {
   });
 
   teardown(() => {
-    fs.rmSync(tmp, { recursive: true, force: true });
+    // Windows may briefly lock files after git exits; retry instead of failing the test.
+    fs.rmSync(tmp, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
   });
 
   test('getRepoRoot and currentRef', async () => {
