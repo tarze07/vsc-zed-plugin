@@ -107,19 +107,19 @@ Widok `Agents` w Secondary Side Bar (TreeView, w późniejszej fazie ewentualnie
 
 ## 7. Zgłoszenia
 
-1. **[M0] Szkielet rozszerzenia** — TypeScript + esbuild, `package.json` z kontrybucjami, ESLint/Prettier, `F5` debug, README.
-2. **[M0] CI w GitHub Actions** — build, lint, testy z xvfb, artefakt `.vsix`.
-3. **[M1] Polecenie „Apply Zed Layout” z backupem i „Restore Previous”** — wybór zakresu User/Workspace, testy jednostkowe backupu.
-4. **[M1] Motywy Zed-like Dark/Light + ustawienia typografii.**
-5. **[M1] Eksport presetu jako VS Code Profile** (plik `.code-profile` + instrukcja).
-6. **[M2] Konfiguracja agentów (`zedLayout.agents`) + polecenie „New Agent Session”.**
-7. **[M2] Widok „Agents” w Secondary Side Bar** — lista sesji, focus/rename/stop/restart.
-8. **[M2] Wykrywanie statusu sesji agenta** (Shell Integration) + badge „wymaga uwagi”.
-9. **[M2] Sesje agentów w git worktree** — tworzenie, otwieranie, usuwanie z zabezpieczeniami.
-10. **[M3] Widok „Agent Changes” + multi-diff + accept/reject.**
-11. **[M4] Zestaw skrótów klawiszowych w stylu Zeda (opcjonalny).**
-12. **[M4] Walkthrough pierwszego uruchomienia i dokumentacja użytkownika.**
-13. **[M4] Publikacja: GitHub Releases, Marketplace, Open VSX.**
+1. [#2](https://github.com/tarze07/vsc-zed-plugin/issues/2) **[M0] Szkielet rozszerzenia** — TypeScript + esbuild, `package.json` z kontrybucjami, ESLint/Prettier, `F5` debug, README.
+2. [#3](https://github.com/tarze07/vsc-zed-plugin/issues/3) **[M0] CI w GitHub Actions** — build, lint, testy z xvfb, artefakt `.vsix`.
+3. [#4](https://github.com/tarze07/vsc-zed-plugin/issues/4) **[M1] Polecenie „Apply Zed Layout” z backupem i „Restore Previous”** — wybór zakresu User/Workspace, testy jednostkowe backupu.
+4. [#5](https://github.com/tarze07/vsc-zed-plugin/issues/5) **[M1] Motywy Zed-like Dark/Light + ustawienia typografii.**
+5. [#13](https://github.com/tarze07/vsc-zed-plugin/issues/13) **[M1] Eksport presetu jako VS Code Profile** (plik `.code-profile` + instrukcja).
+6. [#6](https://github.com/tarze07/vsc-zed-plugin/issues/6) **[M2] Konfiguracja agentów (`zedLayout.agents`) + polecenie „New Agent Session”.**
+7. [#7](https://github.com/tarze07/vsc-zed-plugin/issues/7) **[M2] Widok „Agents” w Secondary Side Bar** — lista sesji, focus/rename/stop/restart.
+8. [#8](https://github.com/tarze07/vsc-zed-plugin/issues/8) **[M2] Wykrywanie statusu sesji agenta** (Shell Integration) + badge „wymaga uwagi”.
+9. [#9](https://github.com/tarze07/vsc-zed-plugin/issues/9) **[M2] Sesje agentów w git worktree** — tworzenie, otwieranie, usuwanie z zabezpieczeniami.
+10. [#10](https://github.com/tarze07/vsc-zed-plugin/issues/10) **[M3] Widok „Agent Changes” + multi-diff + accept/reject.**
+11. [#11](https://github.com/tarze07/vsc-zed-plugin/issues/11) **[M4] Zestaw skrótów klawiszowych w stylu Zeda (opcjonalny).**
+12. [#12](https://github.com/tarze07/vsc-zed-plugin/issues/12) **[M4] Walkthrough pierwszego uruchomienia i dokumentacja użytkownika.**
+13. [#14](https://github.com/tarze07/vsc-zed-plugin/issues/14) **[M4] Publikacja: GitHub Releases, Marketplace, Open VSX.**
 
 ## 8. Ryzyka i otwarte pytania
 - **Brak API do pełnej kontroli układu** — część ustawień (np. pozycja konkretnych widoków) da się zmienić tylko poleceniami `workbench.action.*`, a VS Code zapamiętuje układ per workspace. Preset może wymagać jednorazowego „ułożenia” przy pierwszym otwarciu workspace.
