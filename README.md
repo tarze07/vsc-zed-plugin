@@ -7,7 +7,7 @@ sesji terminala, opcjonalnie w izolowanym `git worktree`.
 
 Pełny plan, zakres i etapy prac: [docs/PLAN.md](docs/PLAN.md).
 
-> **Status:** M1 — układ i wygląd. Panel agentów, worktree i przegląd zmian są w planach (M2–M3).
+> **Status:** M2 — panel agentów i worktree. Przegląd zmian agentów (Review) w planach (M3).
 
 ## Funkcje
 
@@ -19,9 +19,20 @@ Pełny plan, zakres i etapy prac: [docs/PLAN.md](docs/PLAN.md).
 - **Motywy Zed-like Dark / Zed-like Light** — stonowane motywy spełniające WCAG AA.
 - **Typografia** — font, rozmiar, interlinia i ligatury dla edytora i terminala
   (`zedLayout.typography.*`).
+- **Sesje agentów** — **Zed Layout: New Agent Session** uruchamia skonfigurowanego agenta
+  (domyślnie Claude Code, Codex, Agy, Kilo Code — `zedLayout.agents`) w nazwanym terminalu jako
+  karcie obok kodu (`zedLayout.agentSessionLocation`).
+- **Widok „Agents”** — lista sesji ze statusem (uruchamia się / działa / czeka / zakończona),
+  akcje focus/rename/stop/restart, badge z liczbą sesji wymagających uwagi i powiadomienia.
+- **Worktree** — **New Agent Session in Worktree** tworzy `git worktree` na nowej gałęzi
+  (`agent/<agent>-<id>`), uruchamia w nim agenta; porównanie z bazą w multi-diff, bezpieczne
+  usuwanie.
 
-Szczegóły: [docs/LAYOUT.md](docs/LAYOUT.md) (lista zmienianych ustawień, backup/restore) oraz
-[docs/THEMES.md](docs/THEMES.md) (paleta, kontrast, fonty).
+Szczegóły: [docs/LAYOUT.md](docs/LAYOUT.md) (lista zmienianych ustawień, backup/restore),
+[docs/THEMES.md](docs/THEMES.md) (paleta, kontrast, fonty), [docs/AGENTS.md](docs/AGENTS.md)
+(konfiguracja agentów), [docs/VIEWS.md](docs/VIEWS.md) (widok Agents, przeniesienie do Secondary
+Side Bar), [docs/STATUS.md](docs/STATUS.md) (wykrywanie statusu) i
+[docs/WORKTREES.md](docs/WORKTREES.md) (sesje w worktree).
 
 ## Wymagania
 

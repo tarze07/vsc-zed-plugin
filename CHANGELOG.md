@@ -10,6 +10,10 @@ All notable changes to this project will be documented in this file.
 - `Zed-like Dark` and `Zed-like Light` color themes with WCAG AA contrast tests (#5).
 - Typography settings `zedLayout.typography.*` applied by the layout preset (#5).
 - `test:unit`, `themes:generate`, `themes:contrast` npm scripts.
+- Agent registry (`zedLayout.agents`, defaults: Claude Code, Codex, Agy, Kilo Code) and `New Agent Session` opening agents as editor-tab terminals (#6).
+- Agents view with per-status icons, session actions and an attention badge (#7).
+- Session status detection via shell integration (`starting` / `running` / `waiting` / `exited`) with notifications (#8).
+- Agent sessions in `git worktree`: create, open in new window, compare with base (multi-diff), safe removal (#9).
 
 ## [0.0.1] - 2026-11-04
 
