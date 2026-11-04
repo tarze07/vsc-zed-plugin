@@ -12,7 +12,7 @@ Pełny plan, zakres i etapy prac: [docs/PLAN.md](docs/PLAN.md).
 
 ## Wymagania
 
-- [Node.js](https://nodejs.org/) 20 lub nowszy (z npm),
+- [Node.js](https://nodejs.org/) 22 lub nowszy (z npm),
 - [Visual Studio Code](https://code.visualstudio.com/) 1.95 lub nowszy (wersja desktopowa).
 
 ## Budowanie
