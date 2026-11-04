@@ -15,3 +15,4 @@ esbuild.mjs
 eslint.config.mjs
 tsconfig.json
 *.vsix
+scripts/**

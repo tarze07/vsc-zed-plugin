@@ -7,8 +7,21 @@ sesji terminala, opcjonalnie w izolowanym `git worktree`.
 
 Pełny plan, zakres i etapy prac: [docs/PLAN.md](docs/PLAN.md).
 
-> **Status:** M0 — szkielet. Rozszerzenie na razie udostępnia jedynie przykładowe polecenie
-> `Zed Layout: Hello` i ustawienie `zedLayout.enabled`.
+> **Status:** M1 — układ i wygląd. Panel agentów, worktree i przegląd zmian są w planach (M2–M3).
+
+## Funkcje
+
+- **Zed Layout: Apply Zed Layout** — ustawia układ w stylu Zeda (pasek aktywności u góry, drzewo
+  projektu po lewej, Secondary Side Bar po prawej, terminal na dole, bez minimapy, kompaktowe
+  zakładki, motyw i typografia). Przed zmianą pyta o zgodę i zapisuje kopię dotychczasowych
+  ustawień. Zakres: User lub Workspace (`zedLayout.layout.scope`).
+- **Zed Layout: Restore Previous Layout** — przywraca ustawienia sprzed pierwszego zastosowania.
+- **Motywy Zed-like Dark / Zed-like Light** — stonowane motywy spełniające WCAG AA.
+- **Typografia** — font, rozmiar, interlinia i ligatury dla edytora i terminala
+  (`zedLayout.typography.*`).
+
+Szczegóły: [docs/LAYOUT.md](docs/LAYOUT.md) (lista zmienianych ustawień, backup/restore) oraz
+[docs/THEMES.md](docs/THEMES.md) (paleta, kontrast, fonty).
 
 ## Wymagania
 
@@ -38,7 +51,7 @@ npm run format       # Prettier (formatowanie)
 2. Zainstaluj rekomendowane rozszerzenia (`.vscode/extensions.json`).
 3. Naciśnij `F5` (konfiguracja **Run Extension**) — zostanie uruchomione okno
    _Extension Development Host_ z załadowanym rozszerzeniem.
-4. W palecie poleceń (`Ctrl+Shift+P` / `Cmd+Shift+P`) wybierz **Zed Layout: Hello**.
+4. W palecie poleceń (`Ctrl+Shift+P` / `Cmd+Shift+P`) wybierz **Zed Layout: Apply Zed Layout**.
 
 Podczas pracy możesz uruchomić zadanie `npm: watch` (`Ctrl+Shift+B`), aby bundel przebudowywał się
 automatycznie.
@@ -52,8 +65,21 @@ przy pierwszym uruchomieniu):
 npm test
 ```
 
+Szybkie testy jednostkowe (bez pobierania VS Code):
+
+```bash
+npm run test:unit
+```
+
 Na Linuksie bez środowiska graficznego (np. w CI) użyj `xvfb-run -a npm test`.
 Testy można też uruchomić z VS Code konfiguracją **Extension Tests**.
+
+## Motywy
+
+```bash
+npm run themes:generate  # regeneruje themes/*.json ze scripts/generate-themes.mjs
+npm run themes:contrast  # raport kontrastu WCAG (kończy się błędem, gdy para nie spełnia progu)
+```
 
 ## Pakowanie
 

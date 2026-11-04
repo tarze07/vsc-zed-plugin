@@ -159,7 +159,10 @@
     "compile-tests": "tsc -p . --outDir out",
     "pretest": "npm run compile-tests && npm run build",
     "test": "vscode-test",
-    "package": "vsce package --no-dependencies"
+    "package": "vsce package --no-dependencies",
+    "test:unit": "npm run compile-tests && mocha --ui tdd out/test/layoutPreset.test.js out/test/layoutBackup.test.js out/test/themeContrast.test.js out/test/typography.test.js",
+    "themes:generate": "node scripts/generate-themes.mjs && prettier --write themes",
+    "themes:contrast": "npm run compile-tests && node scripts/contrast-report.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
@@ -171,6 +174,7 @@
     "@vscode/vsce": "^3.9.0",
     "esbuild": "^0.28.0",
     "eslint": "^9.39.0",
+    "mocha": "^11.8.0",
     "prettier": "^3.6.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.0"
