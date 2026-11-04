@@ -5,12 +5,12 @@ import { createAgentsView } from './agentsView';
 
 export { AGENTS_VIEW_ID, AgentsTreeDataProvider, createTreeItem } from './agentsView';
 
-/** Views: the Agents tree view (#7). */
+/** Views: the Agents tree view (#7) with detached sessions and orphaned worktrees (#16). */
 export function register(
   context: vscode.ExtensionContext,
   sessions: SessionManager,
-  _history: SessionHistory,
-  _orphans: OrphanTracker,
+  history: SessionHistory,
+  orphans: OrphanTracker,
 ): void {
-  context.subscriptions.push(createAgentsView(sessions));
+  context.subscriptions.push(createAgentsView(sessions, history, orphans));
 }
