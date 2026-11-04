@@ -1,10 +1,8 @@
 import type * as vscode from 'vscode';
 
-/**
- * Review: agent changes view, multi-diff (`vscode.changes`) and accept/reject actions (M3, #10).
- *
- * Placeholder module (M0 skeleton) - see docs/PLAN.md.
- */
-export function register(_context: vscode.ExtensionContext): void {
-  // Not implemented yet.
+import type { SessionManager } from '../agents/types';
+
+/** Review (#10): Agent Changes view, multi-diff and accept/reject actions. */
+export function register(_context: vscode.ExtensionContext, _sessions: SessionManager): void {
+  // Implemented in #10.
 }

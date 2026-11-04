@@ -111,6 +111,66 @@
         "title": "Remove Worktree",
         "category": "Zed Layout",
         "icon": "$(trash)"
+      },
+      {
+        "command": "zedLayout.review.open",
+        "title": "Review Agent Changes",
+        "category": "Zed Layout",
+        "icon": "$(diff-multiple)"
+      },
+      {
+        "command": "zedLayout.review.refresh",
+        "title": "Refresh Agent Changes",
+        "category": "Zed Layout",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "zedLayout.review.openAll",
+        "title": "Open All Changes",
+        "category": "Zed Layout",
+        "icon": "$(diff-multiple)"
+      },
+      {
+        "command": "zedLayout.review.openFile",
+        "title": "Open Change",
+        "category": "Zed Layout",
+        "icon": "$(diff)"
+      },
+      {
+        "command": "zedLayout.review.accept",
+        "title": "Accept Change",
+        "category": "Zed Layout",
+        "icon": "$(check)"
+      },
+      {
+        "command": "zedLayout.review.reject",
+        "title": "Reject Change",
+        "category": "Zed Layout",
+        "icon": "$(discard)"
+      },
+      {
+        "command": "zedLayout.review.acceptAll",
+        "title": "Accept All Changes",
+        "category": "Zed Layout",
+        "icon": "$(check-all)"
+      },
+      {
+        "command": "zedLayout.review.rejectAll",
+        "title": "Reject All Changes",
+        "category": "Zed Layout",
+        "icon": "$(discard)"
+      },
+      {
+        "command": "zedLayout.review.mergeIntoBase",
+        "title": "Merge Agent Branch into Base",
+        "category": "Zed Layout",
+        "icon": "$(git-merge)"
+      },
+      {
+        "command": "zedLayout.profile.save",
+        "title": "Save Zed Layout as Profile File...",
+        "category": "Zed Layout",
+        "icon": "$(save)"
       }
     ],
     "configuration": {
@@ -314,6 +374,21 @@
           "type": "string",
           "default": "agent/",
           "description": "Prefix for branches created for agent worktrees."
+        },
+        "zedLayout.review.acceptAllAction": {
+          "type": "string",
+          "enum": [
+            "ask",
+            "stage",
+            "commit"
+          ],
+          "default": "ask",
+          "enumDescriptions": [
+            "Ask whether to stage or commit.",
+            "Stage all changes (git add).",
+            "Stage and commit with a message."
+          ],
+          "description": "What \"Accept All Changes\" does in an agent worktree."
         }
       }
     },
@@ -345,6 +420,12 @@
           "name": "Agents",
           "icon": "resources/agents.svg",
           "contextualTitle": "Zed Layout"
+        },
+        {
+          "id": "zedLayout.agentChangesView",
+          "name": "Agent Changes",
+          "icon": "resources/agents.svg",
+          "contextualTitle": "Zed Layout"
         }
       ]
     },
@@ -352,6 +433,10 @@
       {
         "view": "zedLayout.agentsView",
         "contents": "No agent sessions yet.\n[New Agent Session](command:zedLayout.agents.newSession)\n[New Agent Session in Worktree](command:zedLayout.worktrees.newSession)"
+      },
+      {
+        "view": "zedLayout.agentChangesView",
+        "contents": "No agent changes to review.\nStart an agent session in a worktree to review its changes here.\n[New Agent Session in Worktree](command:zedLayout.worktrees.newSession)"
       }
     ],
     "menus": {
@@ -365,6 +450,11 @@
           "command": "zedLayout.worktrees.newSession",
           "when": "view == zedLayout.agentsView",
           "group": "navigation@2"
+        },
+        {
+          "command": "zedLayout.review.refresh",
+          "when": "view == zedLayout.agentChangesView",
+          "group": "navigation@1"
         }
       ],
       "view/item/context": [
@@ -412,6 +502,71 @@
           "command": "zedLayout.worktrees.remove",
           "when": "view == zedLayout.agentsView && viewItem =~ /^agentSession.*\\.worktree/",
           "group": "2_worktree@3"
+        },
+        {
+          "command": "zedLayout.review.open",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^agentSession/",
+          "group": "3_review@1"
+        },
+        {
+          "command": "zedLayout.review.openAll",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewSession/",
+          "group": "inline@1"
+        },
+        {
+          "command": "zedLayout.review.acceptAll",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewSession/",
+          "group": "inline@2"
+        },
+        {
+          "command": "zedLayout.review.rejectAll",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewSession/",
+          "group": "inline@3"
+        },
+        {
+          "command": "zedLayout.review.openAll",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewSession/",
+          "group": "1_review@1"
+        },
+        {
+          "command": "zedLayout.review.acceptAll",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewSession/",
+          "group": "1_review@2"
+        },
+        {
+          "command": "zedLayout.review.rejectAll",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewSession/",
+          "group": "1_review@3"
+        },
+        {
+          "command": "zedLayout.review.mergeIntoBase",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewSession.*\\.worktree/",
+          "group": "2_merge@1"
+        },
+        {
+          "command": "zedLayout.review.accept",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewFile/",
+          "group": "inline@1"
+        },
+        {
+          "command": "zedLayout.review.reject",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewFile/",
+          "group": "inline@2"
+        },
+        {
+          "command": "zedLayout.review.openFile",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewFile/",
+          "group": "1_file@1"
+        },
+        {
+          "command": "zedLayout.review.accept",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewFile/",
+          "group": "1_file@2"
+        },
+        {
+          "command": "zedLayout.review.reject",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewFile/",
+          "group": "1_file@3"
         }
       ],
       "commandPalette": [
@@ -441,6 +596,22 @@
         },
         {
           "command": "zedLayout.worktrees.remove",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.review.refresh",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.review.openFile",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.review.accept",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.review.reject",
           "when": "false"
         }
       ]
