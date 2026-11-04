@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Session persistence: agent sessions are saved per workspace, terminals restored after a window reload are re-attached, and sessions that could not be restored can be resumed or forgotten (`zedLayout.sessions.restoreOnStartup`) (#16).
+- Orphaned agent worktrees: listed in the Agents view with Start Session / Open / Review / Remove, bulk `Clean Up Agent Worktrees...`, base ref recorded at creation (`zedLayout.worktrees.showOrphaned`) (#16).
+
+### Changed
+
+- The extension activates on startup (`onStartupFinished`) to re-attach restored sessions (#16).
+
+### Fixed
+
+- Exit of an agent that was already running before a window reload is now detected (#16).
+
 ## [0.1.0] - 2026-11-04
 
 First preview release.

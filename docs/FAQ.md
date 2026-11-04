@@ -82,21 +82,26 @@ będąc już w profilu). Szczegóły: [PROFILE.md](PROFILE.md).
 - Wiele CLI agentów działa najlepiej w WSL — wtedy otwórz projekt przez **WSL: Connect to WSL**
   i zainstaluj CLI w WSL.
 
-## Po przeładowaniu okna zostały worktree i gałęzie agentów
+## Co dzieje się z sesjami po przeładowaniu okna?
 
-To znane ograniczenie: lista sesji jest trzymana w pamięci i **nie przetrwa przeładowania okna**
-(ani zamknięcia VS Code). Terminale mogą zostać przywrócone przez VS Code, ale nie są już
-śledzone jako sesje, a worktree i gałęzie `agent/*` pozostają na dysku — praca agentów nie
-przepada.
+Od #16 sesje są zapisywane w stanie przestrzeni roboczej (`zedLayout.sessions.restoreOnStartup`,
+domyślnie włączone):
 
-Co zrobić:
+- Terminale agentów, które VS Code przywróci (_persistent sessions_, ustawienie
+  `terminal.integrated.enablePersistentSessions`), wracają do widoku „Agents” jako sesje — bez
+  ponownego uruchamiania agenta. Dopasowanie po znaczniku `ZED_LAYOUT_SESSION_ID`, a gdy go brak —
+  po nazwie i katalogu terminala ([AGENTS.md](AGENTS.md)).
+- Sesje, których terminali nie przywrócono, trafiają do grupy **Not restored** — możesz je wznowić
+  (**Resume**: ten sam agent, katalog i worktree) albo zapomnieć (**Forget**; worktree zostaje).
+- Worktree agentów bez żadnej sesji pokazują się w grupie **Orphaned worktrees** z akcjami
+  Start Session, Open in New Window, Review i Remove; zbiorcze sprzątanie: **Zed Layout: Clean Up
+  Agent Worktrees...** ([WORKTREES.md](WORKTREES.md)).
 
-- Przejrzyj zmiany ręcznie: `git worktree list`, a potem _Open Folder_ na katalogu worktree albo
-  `git diff main...agent/claude-1a2b3c` w głównym repozytorium.
-- Scal gałąź zwykłym `git merge agent/<nazwa>`.
-- Usuń worktree: `git worktree remove <katalog>` (`--force`, jeśli są niezacommitowane zmiany,
-  które chcesz porzucić), gałąź: `git branch -d agent/<nazwa>` (`-D`, jeśli nie jest scalona).
-- Katalog usunięty ręcznie? `git worktree prune` czyści wpisy w repozytorium.
+Ograniczenia: status przywróconej sesji to _running_ do następnego zdarzenia Shell Integration;
+czy proces agenta przetrwa przeładowanie, zależy od przywracania procesów terminala przez VS Code.
+
+Ręcznie (bez rozszerzenia): `git worktree list`, `git worktree remove <katalog>`,
+`git branch -d agent/<nazwa>`, `git worktree prune` dla katalogów usuniętych ręcznie.
 
 ## Czy rozszerzenie zmienia moje ustawienia bez pytania?
 

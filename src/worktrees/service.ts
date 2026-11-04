@@ -35,6 +35,10 @@ export interface CreateWorktreeOptions {
 export interface RemoveWorktreeOptions {
   /** `git worktree remove --force` (discards uncommitted changes). */
   force?: boolean;
+  /** Worktree is locked: pass `--force` twice (implies `force`). */
+  locked?: boolean;
+  /** Only `git worktree prune` (stale entry whose directory is gone or unusable). */
+  prune?: boolean;
   /** Also `git branch -D <branch>`. */
   deleteBranch?: boolean;
 }
@@ -63,6 +67,13 @@ export interface WorktreeServiceOptions {
 }
 
 const DEFAULT_PREFIX = 'agent/';
+
+/** Git config variable (in section `branch.<name>`) holding the ref an agent branch was created from. */
+export const BASE_CONFIG_KEY = 'zedLayoutBase';
+
+function baseConfigKey(branch: string): string {
+  return `branch.${branch}.${BASE_CONFIG_KEY}`;
+}
 
 export class WorktreeService {
   private readonly shortId: () => string;
@@ -159,11 +170,117 @@ export class WorktreeService {
         }
         throw error;
       }
+      await this.recordBaseRef(repoRoot, branch, baseRef);
       return { path: wtPath, branch, baseRef, repoRoot };
     }
     throw lastError instanceof Error
       ? lastError
       : new Error('Could not find a free branch name for the worktree');
+  }
+
+  /** Stores `baseRef` in `branch.<branch>.zedLayoutBase` (best effort; never throws). */
+  async recordBaseRef(repoRoot: string, branch: string, baseRef: string): Promise<boolean> {
+    try {
+      await this.git(['config', baseConfigKey(branch), baseRef], { cwd: repoRoot });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /** Base ref recorded for `branch` at creation, or `undefined`. */
+  async readBaseRef(repoRoot: string, branch: string): Promise<string | undefined> {
+    try {
+      const { stdout } = await this.git(['config', '--get', baseConfigKey(branch)], {
+        cwd: repoRoot,
+      });
+      return stdout.trim() || undefined;
+    } catch {
+      // Exit code 1: not set.
+      return undefined;
+    }
+  }
+
+  /** All recorded base refs of the repository (one `git config` call): branch → base ref. */
+  async readBaseRefs(repoRoot: string): Promise<Map<string, string>> {
+    const result = new Map<string, string>();
+    let stdout: string;
+    try {
+      ({ stdout } = await this.git(
+        ['config', '-z', '--get-regexp', `^branch\\..*\\.${BASE_CONFIG_KEY.toLowerCase()}$`],
+        { cwd: repoRoot },
+      ));
+    } catch {
+      return result;
+    }
+    const suffix = `.${BASE_CONFIG_KEY.toLowerCase()}`;
+    // `-z`: records "<key>\n<value>\0".
+    for (const record of stdout.split('\0')) {
+      const nl = record.indexOf('\n');
+      if (nl === -1) {
+        continue;
+      }
+      const key = record.slice(0, nl);
+      const value = record.slice(nl + 1).trim();
+      if (key.startsWith('branch.') && key.toLowerCase().endsWith(suffix) && value) {
+        result.set(key.slice('branch.'.length, key.length - suffix.length), value);
+      }
+    }
+    return result;
+  }
+
+  /** Removes the recorded base ref of `branch` (best effort). */
+  async clearBaseRef(repoRoot: string, branch: string): Promise<void> {
+    try {
+      await this.git(['config', '--unset', baseConfigKey(branch)], { cwd: repoRoot });
+    } catch {
+      // Not set (exit 5) or the section is already gone.
+    }
+  }
+
+  /**
+   * The repository's default branch: `origin/HEAD` (as a local branch when it exists, else the
+   * remote-tracking ref), then `main`, then `master`, then the current branch of `repoRoot`.
+   */
+  async defaultBranch(repoRoot: string): Promise<string> {
+    try {
+      const { stdout } = await this.git(
+        ['symbolic-ref', '--quiet', '--short', 'refs/remotes/origin/HEAD'],
+        { cwd: repoRoot },
+      );
+      const remoteRef = stdout.trim();
+      if (remoteRef) {
+        const local = remoteRef.replace(/^origin\//, '');
+        return (await this.branchExists(repoRoot, local)) ? local : remoteRef;
+      }
+    } catch {
+      // No origin/HEAD.
+    }
+    for (const candidate of ['main', 'master']) {
+      if (await this.branchExists(repoRoot, candidate)) {
+        return candidate;
+      }
+    }
+    return this.currentRef(repoRoot);
+  }
+
+  /** Recorded base ref of `branch` when it still resolves to a commit, else `defaultBranch`. */
+  async resolveBaseRef(repoRoot: string, branch: string | undefined): Promise<string> {
+    const recorded = branch ? await this.readBaseRef(repoRoot, branch) : undefined;
+    if (recorded) {
+      try {
+        await this.resolveCommit(repoRoot, recorded);
+        return recorded;
+      } catch {
+        // Base branch deleted since: fall back.
+      }
+    }
+    return this.defaultBranch(repoRoot);
+  }
+
+  /** `git worktree prune` (drops entries whose directory no longer exists). */
+  async prune(repoRoot: string): Promise<void> {
+    await this.git(['worktree', 'prune'], { cwd: repoRoot });
   }
 
   /** All worktrees of the repository (the main one first). */
@@ -184,10 +301,13 @@ export class WorktreeService {
     return (await this.uncommittedChanges(wtPath)).length > 0;
   }
 
-  /** Number of commits on the worktree's `HEAD` that are not reachable from `baseRef`. */
-  async countCommitsNotInBase(wtPath: string, baseRef: string): Promise<number> {
-    const { stdout } = await this.git(['rev-list', '--count', `${baseRef}..HEAD`, '--'], {
-      cwd: wtPath,
+  /**
+   * Number of commits on `head` (default: the worktree's `HEAD`; run in `cwd`) that are not
+   * reachable from `baseRef`.
+   */
+  async countCommitsNotInBase(cwd: string, baseRef: string, head = 'HEAD'): Promise<number> {
+    const { stdout } = await this.git(['rev-list', '--count', `${baseRef}..${head}`, '--'], {
+      cwd,
     });
     return Number.parseInt(stdout.trim(), 10) || 0;
   }
@@ -232,9 +352,12 @@ export class WorktreeService {
     options: RemoveWorktreeOptions = {},
   ): Promise<RemoveWorktreeResult> {
     const cwd = info.repoRoot;
-    if (fs.existsSync(info.path)) {
+    if (!options.prune && fs.existsSync(info.path)) {
       const args = ['worktree', 'remove'];
-      if (options.force) {
+      if (options.force || options.locked) {
+        args.push('--force');
+      }
+      if (options.locked) {
         args.push('--force');
       }
       args.push('--', info.path);
@@ -243,10 +366,11 @@ export class WorktreeService {
       // Directory already gone (deleted by hand): drop the stale administrative entry.
       await this.git(['worktree', 'prune'], { cwd });
     }
-    if (!options.deleteBranch) {
+    if (!options.deleteBranch || !info.branch) {
       return { branchDeleted: false };
     }
     try {
+      // Also drops the `branch.<name>` config section (incl. the recorded base ref).
       await this.git(['branch', '-D', '--', info.branch], { cwd });
       return { branchDeleted: true };
     } catch (error) {

@@ -169,6 +169,94 @@ suite('worktree service (git CLI)', function () {
     assert.strictEqual(await service.branchExists(repo, info.branch), false);
   });
 
+  test('records the base ref in git config and drops it with the branch', async () => {
+    await git(['branch', 'develop'], { cwd: repo });
+    const info = await service.create({ repoRoot: repo, agentId: 'claude', baseRef: 'develop' });
+    const stored = (
+      await git(['config', '--get', `branch.${info.branch}.zedLayoutBase`], { cwd: repo })
+    ).stdout.trim();
+    assert.strictEqual(stored, 'develop');
+    assert.strictEqual(await service.readBaseRef(repo, info.branch), 'develop');
+    assert.strictEqual(await service.readBaseRef(repo, 'agent/unknown'), undefined);
+    assert.strictEqual(await service.resolveBaseRef(repo, info.branch), 'develop');
+
+    const second = await service.create({ repoRoot: repo, agentId: 'codex', baseRef: 'main' });
+    const all = await service.readBaseRefs(repo);
+    assert.strictEqual(all.get(info.branch), 'develop');
+    assert.strictEqual(all.get(second.branch), 'main');
+    assert.strictEqual(all.size, 2);
+
+    // Recorded base deleted since → default branch.
+    await git(['branch', '-D', 'develop'], { cwd: repo });
+    assert.strictEqual(await service.resolveBaseRef(repo, info.branch), 'main');
+
+    // `git branch -D` removes the whole `branch.<name>` section, including the base ref.
+    await service.remove(info, { deleteBranch: true });
+    assert.strictEqual(await service.readBaseRef(repo, info.branch), undefined);
+    // Keeping the branch keeps the base ref.
+    await service.remove(second);
+    assert.strictEqual(await service.readBaseRef(repo, second.branch), 'main');
+
+    await service.clearBaseRef(repo, second.branch);
+    assert.strictEqual(await service.readBaseRef(repo, second.branch), undefined);
+    await service.clearBaseRef(repo, second.branch); // idempotent
+  });
+
+  test('defaultBranch: origin/HEAD, then main, then master, then the current branch', async () => {
+    assert.strictEqual(await service.defaultBranch(repo), 'main');
+
+    await git(['branch', '-m', 'main', 'master'], { cwd: repo });
+    assert.strictEqual(await service.defaultBranch(repo), 'master');
+
+    await git(['branch', '-m', 'master', 'trunk'], { cwd: repo });
+    assert.strictEqual(await service.defaultBranch(repo), 'trunk');
+
+    // origin/HEAD wins; the local branch name is used when it exists…
+    const sha = (await git(['rev-parse', 'HEAD'], { cwd: repo })).stdout.trim();
+    await git(['update-ref', 'refs/remotes/origin/develop', sha], { cwd: repo });
+    await git(['symbolic-ref', 'refs/remotes/origin/HEAD', 'refs/remotes/origin/develop'], {
+      cwd: repo,
+    });
+    assert.strictEqual(await service.defaultBranch(repo), 'origin/develop');
+    await git(['branch', 'develop'], { cwd: repo });
+    assert.strictEqual(await service.defaultBranch(repo), 'develop');
+
+    // A worktree on an agent branch without a recorded base falls back to the default branch.
+    await git(['worktree', 'add', '-b', 'agent/manual', '--', path.join(tmp, 'manual'), 'trunk'], {
+      cwd: repo,
+    });
+    assert.strictEqual(await service.resolveBaseRef(repo, 'agent/manual'), 'develop');
+  });
+
+  test('remove: prune option, locked worktree and commits counted from the branch', async () => {
+    const info = await service.create({ repoRoot: repo, agentId: 'kilo', baseRef: 'main' });
+    fs.writeFileSync(path.join(info.path, 'x.txt'), 'x\n');
+    await git(['add', '.'], { cwd: info.path });
+    await git(['commit', '--quiet', '-m', 'x'], { cwd: info.path });
+    assert.strictEqual(
+      await service.countCommitsNotInBase(repo, 'main', `refs/heads/${info.branch}`),
+      1,
+    );
+
+    await git(['worktree', 'lock', '--reason', 'test', '--', info.path], { cwd: repo });
+    const locked = (await service.list(repo))[1];
+    assert.strictEqual(locked.locked, true);
+    await assert.rejects(
+      service.remove(info, { force: true }),
+      (e: unknown) => e instanceof GitError,
+    );
+    await service.remove(info, { locked: true });
+    assert.ok(!fs.existsSync(info.path));
+    assert.strictEqual(await service.branchExists(repo, info.branch), true);
+
+    const stale = await service.create({ repoRoot: repo, agentId: 'agy', baseRef: 'main' });
+    fs.rmSync(stale.path, { recursive: true, force: true });
+    assert.strictEqual((await service.list(repo)).find((e) => e.prunable)?.branch, stale.branch);
+    await service.remove(stale, { prune: true, deleteBranch: true });
+    assert.strictEqual((await service.list(repo)).length, 1);
+    assert.strictEqual(await service.branchExists(repo, stale.branch), false);
+  });
+
   test('create fails with git stderr for an unknown base ref', async () => {
     await assert.rejects(
       service.create({ repoRoot: repo, agentId: 'claude', baseRef: 'does-not-exist' }),

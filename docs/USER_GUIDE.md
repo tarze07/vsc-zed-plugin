@@ -120,8 +120,8 @@ gałęzie nie wymagają aktualizacji (konflikty wychodzą wtedy wcześnie i są 
 - **Rozdzielaj obszary kodu** między agentów (np. backend / frontend / testy) — mniej konfliktów.
 - **Commituj często** w worktree (albo proś o to agenta) — _Compare Worktree with Base_ i review
   pokazują zarówno commity, jak i zmiany niezacommitowane.
-- **Nie przeładowuj okna** w trakcie pracy agentów — lista sesji nie przetrwa przeładowania
-  (worktree i gałęzie zostają na dysku, patrz [FAQ.md](FAQ.md#po-przeładowaniu-okna-zostały-worktree-i-gałęzie-agentów)).
+- **Przeładowanie okna** nie gubi sesji: przywrócone terminale wracają do widoku, a reszta trafia do
+  grup „Not restored” i „Orphaned worktrees” (patrz [FAQ.md](FAQ.md#co-dzieje-się-z-sesjami-po-przeładowaniu-okna)).
 - **Pełny podgląd gałęzi:** _Open Worktree in New Window_ otwiera worktree w osobnym oknie z
   widokiem Source Control dla tej gałęzi.
 - **Własni agenci:** dowolne CLI (także skrypt) dodasz do `zedLayout.agents` — np. ten sam agent
