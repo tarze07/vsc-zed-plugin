@@ -1,0 +1,1003 @@
+{
+  "name": "vsc-zed-plugin",
+  "displayName": "Zed-like Agent Workspace",
+  "description": "Zed-like layout, themes and multi-agent workspace for VS Code: run Claude Code, Codex, Agy and Kilo Code sessions side by side, in git worktrees, and review their changes.",
+  "version": "0.1.0",
+  "publisher": "tarze07",
+  "license": "GPL-3.0-only",
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#1c1f24",
+    "theme": "dark"
+  },
+  "preview": true,
+  "pricing": "Free",
+  "qna": "https://github.com/tarze07/vsc-zed-plugin/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tarze07/vsc-zed-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tarze07/vsc-zed-plugin/issues"
+  },
+  "homepage": "https://github.com/tarze07/vsc-zed-plugin#readme",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Themes",
+    "AI",
+    "Other"
+  ],
+  "keywords": [
+    "zed",
+    "layout",
+    "workspace",
+    "agents",
+    "ai",
+    "multi-agent",
+    "claude",
+    "claude code",
+    "codex",
+    "kilo code",
+    "worktree",
+    "git worktree",
+    "review",
+    "diff",
+    "terminal",
+    "theme",
+    "dark theme",
+    "profile"
+  ],
+  "extensionKind": [
+    "workspace"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "zedLayout.hello",
+        "title": "Hello",
+        "category": "Zed Layout"
+      },
+      {
+        "command": "zedLayout.apply",
+        "title": "Apply Zed Layout",
+        "category": "Zed Layout"
+      },
+      {
+        "command": "zedLayout.restore",
+        "title": "Restore Previous Layout",
+        "category": "Zed Layout"
+      },
+      {
+        "command": "zedLayout.agents.newSession",
+        "title": "New Agent Session",
+        "category": "Zed Layout",
+        "icon": "$(add)"
+      },
+      {
+        "command": "zedLayout.agents.focus",
+        "title": "Focus Agent Session",
+        "category": "Zed Layout",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "zedLayout.agents.rename",
+        "title": "Rename Agent Session",
+        "category": "Zed Layout",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "zedLayout.agents.stop",
+        "title": "Stop Agent Session",
+        "category": "Zed Layout",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "zedLayout.agents.restart",
+        "title": "Restart Agent Session",
+        "category": "Zed Layout",
+        "icon": "$(debug-restart)"
+      },
+      {
+        "command": "zedLayout.agents.next",
+        "title": "Next Agent Session",
+        "category": "Zed Layout"
+      },
+      {
+        "command": "zedLayout.agents.previous",
+        "title": "Previous Agent Session",
+        "category": "Zed Layout"
+      },
+      {
+        "command": "zedLayout.worktrees.newSession",
+        "title": "New Agent Session in Worktree",
+        "category": "Zed Layout",
+        "icon": "$(git-branch)"
+      },
+      {
+        "command": "zedLayout.worktrees.openInNewWindow",
+        "title": "Open Worktree in New Window",
+        "category": "Zed Layout",
+        "icon": "$(empty-window)"
+      },
+      {
+        "command": "zedLayout.worktrees.compareWithBase",
+        "title": "Compare Worktree with Base",
+        "category": "Zed Layout",
+        "icon": "$(diff)"
+      },
+      {
+        "command": "zedLayout.worktrees.remove",
+        "title": "Remove Worktree",
+        "category": "Zed Layout",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "zedLayout.review.open",
+        "title": "Review Agent Changes",
+        "category": "Zed Layout",
+        "icon": "$(diff-multiple)"
+      },
+      {
+        "command": "zedLayout.review.refresh",
+        "title": "Refresh Agent Changes",
+        "category": "Zed Layout",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "zedLayout.review.openAll",
+        "title": "Open All Changes",
+        "category": "Zed Layout",
+        "icon": "$(diff-multiple)"
+      },
+      {
+        "command": "zedLayout.review.openFile",
+        "title": "Open Change",
+        "category": "Zed Layout",
+        "icon": "$(diff)"
+      },
+      {
+        "command": "zedLayout.review.accept",
+        "title": "Accept Change",
+        "category": "Zed Layout",
+        "icon": "$(check)"
+      },
+      {
+        "command": "zedLayout.review.reject",
+        "title": "Reject Change",
+        "category": "Zed Layout",
+        "icon": "$(discard)"
+      },
+      {
+        "command": "zedLayout.review.acceptAll",
+        "title": "Accept All Changes",
+        "category": "Zed Layout",
+        "icon": "$(check-all)"
+      },
+      {
+        "command": "zedLayout.review.rejectAll",
+        "title": "Reject All Changes",
+        "category": "Zed Layout",
+        "icon": "$(discard)"
+      },
+      {
+        "command": "zedLayout.review.mergeIntoBase",
+        "title": "Merge Agent Branch into Base",
+        "category": "Zed Layout",
+        "icon": "$(git-merge)"
+      },
+      {
+        "command": "zedLayout.profile.save",
+        "title": "Save Zed Layout as Profile File...",
+        "category": "Zed Layout",
+        "icon": "$(save)"
+      },
+      {
+        "command": "zedLayout.keymap.toggleAgentsPanel",
+        "title": "Toggle Agents Panel",
+        "category": "Zed Layout"
+      },
+      {
+        "command": "zedLayout.keymap.toggleProjectPanel",
+        "title": "Toggle Project Panel",
+        "category": "Zed Layout"
+      },
+      {
+        "command": "zedLayout.agents.resume",
+        "title": "Resume Agent Session",
+        "category": "Zed Layout",
+        "icon": "$(debug-continue)"
+      },
+      {
+        "command": "zedLayout.agents.forget",
+        "title": "Forget Agent Session",
+        "category": "Zed Layout",
+        "icon": "$(close)"
+      },
+      {
+        "command": "zedLayout.worktrees.orphan.startSession",
+        "title": "Start Agent Session in Worktree",
+        "category": "Zed Layout",
+        "icon": "$(play)"
+      },
+      {
+        "command": "zedLayout.worktrees.orphan.openInNewWindow",
+        "title": "Open Worktree in New Window",
+        "category": "Zed Layout",
+        "icon": "$(empty-window)"
+      },
+      {
+        "command": "zedLayout.worktrees.orphan.review",
+        "title": "Review Worktree Changes",
+        "category": "Zed Layout",
+        "icon": "$(diff-multiple)"
+      },
+      {
+        "command": "zedLayout.worktrees.orphan.remove",
+        "title": "Remove Worktree",
+        "category": "Zed Layout",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "zedLayout.worktrees.cleanUp",
+        "title": "Clean Up Agent Worktrees...",
+        "category": "Zed Layout",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "zedLayout.worktrees.refreshOrphans",
+        "title": "Refresh Orphaned Worktrees",
+        "category": "Zed Layout",
+        "icon": "$(refresh)"
+      }
+    ],
+    "configuration": {
+      "title": "Zed-like Agent Workspace",
+      "properties": {
+        "zedLayout.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable the Zed-like Agent Workspace extension features."
+        },
+        "zedLayout.layout.scope": {
+          "type": "string",
+          "enum": [
+            "ask",
+            "user",
+            "workspace"
+          ],
+          "default": "ask",
+          "description": "Where `Apply Zed Layout` writes settings: ask each time, User settings, or Workspace settings."
+        },
+        "zedLayout.layout.confirmBeforeApply": {
+          "type": "boolean",
+          "default": true,
+          "description": "Ask for confirmation before changing settings."
+        },
+        "zedLayout.layout.activityBarLocation": {
+          "type": "string",
+          "enum": [
+            "top",
+            "hidden"
+          ],
+          "default": "top",
+          "description": "Activity Bar location applied by the preset."
+        },
+        "zedLayout.layout.hideBreadcrumbs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide breadcrumbs when applying the preset."
+        },
+        "zedLayout.layout.applyTheme": {
+          "type": "boolean",
+          "default": true,
+          "description": "Also switch the color theme when applying the preset."
+        },
+        "zedLayout.layout.theme": {
+          "type": "string",
+          "enum": [
+            "Zed-like Dark",
+            "Zed-like Light"
+          ],
+          "default": "Zed-like Dark",
+          "description": "Color theme applied by the preset (when `zedLayout.layout.applyTheme` is enabled)."
+        },
+        "zedLayout.typography.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Apply typography settings (fonts, line height, ligatures) as part of the preset."
+        },
+        "zedLayout.typography.fontFamily": {
+          "type": "string",
+          "default": "'IBM Plex Mono', 'Lilex', Menlo, Consolas, 'DejaVu Sans Mono', monospace",
+          "description": "Editor font family applied by the preset."
+        },
+        "zedLayout.typography.fontSize": {
+          "type": "number",
+          "default": 14,
+          "minimum": 6,
+          "maximum": 72,
+          "description": "Editor font size applied by the preset."
+        },
+        "zedLayout.typography.lineHeight": {
+          "type": "number",
+          "default": 1.6,
+          "minimum": 0,
+          "description": "Editor line height applied by the preset (values below 8 are a multiplier of font size)."
+        },
+        "zedLayout.typography.ligatures": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable font ligatures in the editor."
+        },
+        "zedLayout.typography.applyToTerminal": {
+          "type": "boolean",
+          "default": true,
+          "description": "Also apply the font family and size to the integrated terminal."
+        },
+        "zedLayout.agents": {
+          "type": "array",
+          "description": "Agent CLIs available for new sessions.",
+          "default": [
+            {
+              "id": "claude",
+              "label": "Claude Code",
+              "command": "claude",
+              "args": [],
+              "icon": "sparkle",
+              "color": "terminal.ansiMagenta"
+            },
+            {
+              "id": "codex",
+              "label": "Codex",
+              "command": "codex",
+              "args": [],
+              "icon": "robot",
+              "color": "terminal.ansiGreen"
+            },
+            {
+              "id": "agy",
+              "label": "Agy",
+              "command": "agy",
+              "args": [],
+              "icon": "rocket",
+              "color": "terminal.ansiBlue"
+            },
+            {
+              "id": "kilo",
+              "label": "Kilo Code",
+              "command": "kilocode",
+              "args": [],
+              "icon": "zap",
+              "color": "terminal.ansiYellow"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "label",
+              "command"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-_]*$",
+                "description": "Unique id."
+              },
+              "label": {
+                "type": "string",
+                "description": "Display name."
+              },
+              "command": {
+                "type": "string",
+                "description": "Executable to run (must be on PATH)."
+              },
+              "args": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Command-line arguments."
+              },
+              "icon": {
+                "type": "string",
+                "description": "Codicon id for the terminal and Agents view, e.g. \"sparkle\"."
+              },
+              "color": {
+                "type": "string",
+                "description": "Theme color id, e.g. \"terminal.ansiMagenta\"."
+              },
+              "env": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Extra environment variables."
+              }
+            }
+          }
+        },
+        "zedLayout.agentSessionLocation": {
+          "type": "string",
+          "enum": [
+            "editor",
+            "panel"
+          ],
+          "default": "editor",
+          "enumDescriptions": [
+            "Open agent sessions as editor tabs next to code.",
+            "Open agent sessions in the terminal panel."
+          ],
+          "description": "Where new agent sessions open."
+        },
+        "zedLayout.status.notifyOnAttention": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a notification when a background agent session needs attention."
+        },
+        "zedLayout.status.waitingAfterSeconds": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "description": "Treat a running agent as waiting for input after this many seconds without output."
+        },
+        "zedLayout.worktrees.directory": {
+          "type": "string",
+          "default": "",
+          "description": "Directory for agent worktrees. Empty: \"../<repo>.worktrees\" next to the repository. Relative paths resolve against the repository root."
+        },
+        "zedLayout.worktrees.branchPrefix": {
+          "type": "string",
+          "default": "agent/",
+          "description": "Prefix for branches created for agent worktrees."
+        },
+        "zedLayout.review.acceptAllAction": {
+          "type": "string",
+          "enum": [
+            "ask",
+            "stage",
+            "commit"
+          ],
+          "default": "ask",
+          "enumDescriptions": [
+            "Ask whether to stage or commit.",
+            "Stage all changes (git add).",
+            "Stage and commit with a message."
+          ],
+          "description": "What \"Accept All Changes\" does for an agent session."
+        },
+        "zedLayout.keymap.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable Zed-style keyboard shortcuts for Zed Layout commands. When disabled, no default VS Code shortcuts are overridden."
+        },
+        "zedLayout.sessions.restoreOnStartup": {
+          "type": "boolean",
+          "default": true,
+          "description": "Re-attach agent sessions whose terminals VS Code restores after a window reload, and list sessions that could not be restored."
+        },
+        "zedLayout.worktrees.showOrphaned": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show agent worktrees that have no session in the Agents view."
+        }
+      }
+    },
+    "themes": [
+      {
+        "label": "Zed-like Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/zed-like-dark-color-theme.json"
+      },
+      {
+        "label": "Zed-like Light",
+        "uiTheme": "vs",
+        "path": "./themes/zed-like-light-color-theme.json"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "zedLayoutAgents",
+          "title": "Agents",
+          "icon": "resources/agents.svg"
+        }
+      ]
+    },
+    "views": {
+      "zedLayoutAgents": [
+        {
+          "id": "zedLayout.agentsView",
+          "name": "Agents",
+          "icon": "resources/agents.svg",
+          "contextualTitle": "Zed Layout"
+        },
+        {
+          "id": "zedLayout.agentChangesView",
+          "name": "Agent Changes",
+          "icon": "resources/agents.svg",
+          "contextualTitle": "Zed Layout"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "zedLayout.agentsView",
+        "contents": "No agent sessions yet.\n[New Agent Session](command:zedLayout.agents.newSession)\n[New Agent Session in Worktree](command:zedLayout.worktrees.newSession)"
+      },
+      {
+        "view": "zedLayout.agentChangesView",
+        "contents": "No agent changes to review.\nStart an agent session in a worktree to review its changes here.\n[New Agent Session in Worktree](command:zedLayout.worktrees.newSession)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "zedLayout.agents.newSession",
+          "when": "view == zedLayout.agentsView",
+          "group": "navigation@1"
+        },
+        {
+          "command": "zedLayout.worktrees.newSession",
+          "when": "view == zedLayout.agentsView",
+          "group": "navigation@2"
+        },
+        {
+          "command": "zedLayout.review.refresh",
+          "when": "view == zedLayout.agentChangesView",
+          "group": "navigation@1"
+        },
+        {
+          "command": "zedLayout.worktrees.cleanUp",
+          "when": "view == zedLayout.agentsView",
+          "group": "9_cleanup@1"
+        },
+        {
+          "command": "zedLayout.worktrees.refreshOrphans",
+          "when": "view == zedLayout.agentsView",
+          "group": "9_cleanup@2"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "zedLayout.agents.restart",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^agentSession/",
+          "group": "inline@1"
+        },
+        {
+          "command": "zedLayout.agents.stop",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^agentSession/",
+          "group": "inline@2"
+        },
+        {
+          "command": "zedLayout.agents.focus",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^agentSession/",
+          "group": "1_session@1"
+        },
+        {
+          "command": "zedLayout.agents.rename",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^agentSession/",
+          "group": "1_session@2"
+        },
+        {
+          "command": "zedLayout.agents.restart",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^agentSession/",
+          "group": "1_session@3"
+        },
+        {
+          "command": "zedLayout.agents.stop",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^agentSession/",
+          "group": "1_session@4"
+        },
+        {
+          "command": "zedLayout.worktrees.openInNewWindow",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^agentSession.*\\.worktree/",
+          "group": "2_worktree@1"
+        },
+        {
+          "command": "zedLayout.worktrees.compareWithBase",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^agentSession.*\\.worktree/",
+          "group": "2_worktree@2"
+        },
+        {
+          "command": "zedLayout.worktrees.remove",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^agentSession.*\\.worktree/",
+          "group": "2_worktree@3"
+        },
+        {
+          "command": "zedLayout.review.open",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^agentSession/",
+          "group": "3_review@1"
+        },
+        {
+          "command": "zedLayout.review.openAll",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewSession/",
+          "group": "inline@1"
+        },
+        {
+          "command": "zedLayout.review.acceptAll",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewSession/",
+          "group": "inline@2"
+        },
+        {
+          "command": "zedLayout.review.rejectAll",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewSession/",
+          "group": "inline@3"
+        },
+        {
+          "command": "zedLayout.review.openAll",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewSession/",
+          "group": "1_review@1"
+        },
+        {
+          "command": "zedLayout.review.acceptAll",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewSession/",
+          "group": "1_review@2"
+        },
+        {
+          "command": "zedLayout.review.rejectAll",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewSession/",
+          "group": "1_review@3"
+        },
+        {
+          "command": "zedLayout.review.mergeIntoBase",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewSession.*\\.worktree/",
+          "group": "2_merge@1"
+        },
+        {
+          "command": "zedLayout.review.accept",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewFile/",
+          "group": "inline@1"
+        },
+        {
+          "command": "zedLayout.review.reject",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewFile/",
+          "group": "inline@2"
+        },
+        {
+          "command": "zedLayout.review.openFile",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewFile/",
+          "group": "1_file@1"
+        },
+        {
+          "command": "zedLayout.review.accept",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewFile/",
+          "group": "1_file@2"
+        },
+        {
+          "command": "zedLayout.review.reject",
+          "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewFile/",
+          "group": "1_file@3"
+        },
+        {
+          "command": "zedLayout.agents.resume",
+          "when": "view == zedLayout.agentsView && viewItem == detachedSession",
+          "group": "inline@1"
+        },
+        {
+          "command": "zedLayout.agents.forget",
+          "when": "view == zedLayout.agentsView && viewItem == detachedSession",
+          "group": "inline@2"
+        },
+        {
+          "command": "zedLayout.agents.resume",
+          "when": "view == zedLayout.agentsView && viewItem == detachedSession",
+          "group": "1_detached@1"
+        },
+        {
+          "command": "zedLayout.agents.forget",
+          "when": "view == zedLayout.agentsView && viewItem == detachedSession",
+          "group": "1_detached@2"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.startSession",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^orphanWorktree/",
+          "group": "inline@1"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.remove",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^orphanWorktree/",
+          "group": "inline@2"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.startSession",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^orphanWorktree/",
+          "group": "1_orphan@1"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.openInNewWindow",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^orphanWorktree/",
+          "group": "1_orphan@2"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.review",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^orphanWorktree/",
+          "group": "1_orphan@3"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.remove",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^orphanWorktree/",
+          "group": "1_orphan@4"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "zedLayout.agents.focus",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.agents.rename",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.agents.stop",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.agents.restart",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.worktrees.openInNewWindow",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.worktrees.compareWithBase",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.worktrees.remove",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.review.refresh",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.review.openFile",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.review.accept",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.review.reject",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.agents.resume",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.agents.forget",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.startSession",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.openInNewWindow",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.review",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.remove",
+          "when": "false"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "zedLayout.keymap.toggleAgentsPanel",
+        "key": "ctrl+shift+/",
+        "mac": "cmd+shift+/",
+        "when": "config.zedLayout.keymap.enabled && !(sideBarFocus && activeViewlet == 'workbench.view.extension.zedLayoutAgents') && !(auxiliaryBarFocus && activeAuxiliary == 'workbench.view.extension.zedLayoutAgents') && !(panelFocus && activePanel == 'workbench.view.extension.zedLayoutAgents')"
+      },
+      {
+        "command": "workbench.action.closeSidebar",
+        "key": "ctrl+shift+/",
+        "mac": "cmd+shift+/",
+        "when": "config.zedLayout.keymap.enabled && sideBarFocus && activeViewlet == 'workbench.view.extension.zedLayoutAgents'"
+      },
+      {
+        "command": "workbench.action.closeAuxiliaryBar",
+        "key": "ctrl+shift+/",
+        "mac": "cmd+shift+/",
+        "when": "config.zedLayout.keymap.enabled && auxiliaryBarFocus && activeAuxiliary == 'workbench.view.extension.zedLayoutAgents'"
+      },
+      {
+        "command": "workbench.action.closePanel",
+        "key": "ctrl+shift+/",
+        "mac": "cmd+shift+/",
+        "when": "config.zedLayout.keymap.enabled && panelFocus && activePanel == 'workbench.view.extension.zedLayoutAgents'"
+      },
+      {
+        "command": "zedLayout.keymap.toggleProjectPanel",
+        "key": "ctrl+shift+e",
+        "mac": "cmd+shift+e",
+        "when": "config.zedLayout.keymap.enabled && !(sideBarFocus && activeViewlet == 'workbench.view.explorer') && !(auxiliaryBarFocus && activeAuxiliary == 'workbench.view.explorer')"
+      },
+      {
+        "command": "workbench.action.closeSidebar",
+        "key": "ctrl+shift+e",
+        "mac": "cmd+shift+e",
+        "when": "config.zedLayout.keymap.enabled && sideBarFocus && activeViewlet == 'workbench.view.explorer'"
+      },
+      {
+        "command": "workbench.action.closeAuxiliaryBar",
+        "key": "ctrl+shift+e",
+        "mac": "cmd+shift+e",
+        "when": "config.zedLayout.keymap.enabled && auxiliaryBarFocus && activeAuxiliary == 'workbench.view.explorer'"
+      },
+      {
+        "command": "workbench.action.terminal.toggleTerminal",
+        "key": "ctrl+`",
+        "mac": "ctrl+`",
+        "when": "config.zedLayout.keymap.enabled"
+      },
+      {
+        "command": "zedLayout.agents.newSession",
+        "key": "shift+alt+n",
+        "mac": "cmd+alt+n",
+        "when": "config.zedLayout.keymap.enabled"
+      },
+      {
+        "command": "zedLayout.agents.newSession",
+        "key": "ctrl+n",
+        "mac": "cmd+n",
+        "when": "config.zedLayout.keymap.enabled && focusedView == 'zedLayout.agentsView'"
+      },
+      {
+        "command": "zedLayout.worktrees.newSession",
+        "key": "shift+alt+w",
+        "mac": "cmd+alt+shift+n",
+        "when": "config.zedLayout.keymap.enabled"
+      },
+      {
+        "command": "zedLayout.agents.next",
+        "key": "shift+alt+]",
+        "mac": "ctrl+alt+]",
+        "when": "config.zedLayout.keymap.enabled"
+      },
+      {
+        "command": "zedLayout.agents.previous",
+        "key": "shift+alt+[",
+        "mac": "ctrl+alt+[",
+        "when": "config.zedLayout.keymap.enabled"
+      },
+      {
+        "command": "zedLayout.review.open",
+        "key": "shift+alt+v",
+        "mac": "cmd+alt+v",
+        "when": "config.zedLayout.keymap.enabled"
+      }
+    ],
+    "walkthroughs": [
+      {
+        "id": "zedLayout.gettingStarted",
+        "title": "Get started with Zed-like Agent Workspace",
+        "description": "Set up a Zed-style layout and run several AI coding agents side by side — each in its own terminal and, optionally, its own git worktree.",
+        "steps": [
+          {
+            "id": "applyLayout",
+            "title": "Apply the Zed layout",
+            "description": "Activity Bar on top, Secondary Side Bar on the right, no minimap, compact tabs, the Zed-like theme and typography. You confirm the changes first and your previous settings are backed up.\n[Apply Zed Layout](command:zedLayout.apply)",
+            "media": {
+              "markdown": "walkthrough/applyLayout.md"
+            },
+            "completionEvents": [
+              "onCommand:zedLayout.apply"
+            ]
+          },
+          {
+            "id": "chooseTheme",
+            "title": "Pick a theme (optional)",
+            "description": "Zed-like Dark and Zed-like Light are muted themes with WCAG AA contrast. The layout preset already switches to the theme set in zedLayout.layout.theme.\n[Pick Theme](command:workbench.action.selectTheme)",
+            "media": {
+              "markdown": "walkthrough/chooseTheme.md"
+            },
+            "completionEvents": [
+              "onSettingChanged:workbench.colorTheme"
+            ]
+          },
+          {
+            "id": "configureAgents",
+            "title": "Configure your agents",
+            "description": "Claude Code (claude), Codex (codex), Agy (agy) and Kilo Code (kilocode) are preconfigured. Install the ones you use and make sure they are on PATH, or set a full path or extra arguments in zedLayout.agents.\n[Open Agent Settings](command:workbench.action.openSettings?%5B%22zedLayout.agents%22%5D)",
+            "media": {
+              "markdown": "walkthrough/configureAgents.md"
+            },
+            "completionEvents": [
+              "onSettingChanged:zedLayout.agents",
+              "onCommand:workbench.action.openSettings"
+            ]
+          },
+          {
+            "id": "startSession",
+            "title": "Start your first agent session",
+            "description": "Pick an agent and it opens in a named terminal tab next to your code. Start it in its own git worktree to let several agents work in parallel without touching each other's files.\n[New Agent Session](command:zedLayout.agents.newSession)\n[New Agent Session in Worktree](command:zedLayout.worktrees.newSession)",
+            "media": {
+              "markdown": "walkthrough/startSession.md"
+            },
+            "completionEvents": [
+              "onCommand:zedLayout.agents.newSession",
+              "onCommand:zedLayout.worktrees.newSession"
+            ]
+          },
+          {
+            "id": "reviewChanges",
+            "title": "Review agent changes",
+            "description": "The Agent Changes view lists the files each session changed. Open them all in one multi-diff, accept or reject per file, then commit and merge the agent branch into its base.\n[Review Agent Changes](command:zedLayout.review.open)",
+            "media": {
+              "markdown": "walkthrough/reviewChanges.md"
+            },
+            "completionEvents": [
+              "onCommand:zedLayout.review.open",
+              "onView:zedLayout.agentChangesView"
+            ]
+          },
+          {
+            "id": "keyboard",
+            "title": "Zed-style keyboard shortcuts (optional)",
+            "description": "Shortcuts are off by default, so your VS Code key bindings stay untouched. Enable zedLayout.keymap.enabled to use Zed-style shortcuts for agent sessions and review.\n[Open Keymap Setting](command:workbench.action.openSettings?%5B%22zedLayout.keymap.enabled%22%5D)",
+            "media": {
+              "markdown": "walkthrough/keyboard.md"
+            },
+            "completionEvents": [
+              "onSettingChanged:zedLayout.keymap.enabled"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build -- --production",
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "compile-tests": "tsc -p . --outDir out",
+    "pretest": "npm run compile-tests && npm run build",
+    "test": "vscode-test",
+    "package": "vsce package --no-dependencies",
+    "test:unit": "npm run compile-tests && mocha --ui tdd out/test/layoutPreset.test.js out/test/layoutBackup.test.js out/test/themeContrast.test.js out/test/typography.test.js out/test/agentRegistry.test.js out/test/agentsViewModel.test.js out/test/statusMachine.test.js out/test/worktreeModel.test.js out/test/worktreeService.test.js out/test/profileFile.test.js out/test/reviewService.test.js out/test/reviewModel.test.js out/test/keymapContrib.test.js out/test/packageMetadata.test.js out/test/walkthroughContrib.test.js out/test/sessionStore.test.js out/test/orphanModel.test.js",
+    "themes:generate": "node scripts/generate-themes.mjs && prettier --write themes",
+    "themes:contrast": "npm run compile-tests && node scripts/contrast-report.mjs",
+    "profile:generate": "npm run compile-tests && node scripts/generate-profile.mjs",
+    "release:check": "node scripts/check-release.mjs",
+    "publish:vsce": "vsce publish --no-dependencies",
+    "publish:ovsx": "ovsx publish --no-dependencies",
+    "docs:tables": "node scripts/docs-tables.mjs --write"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.20.5",
+    "@types/vscode": "~1.95.0",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.1.0",
+    "@vscode/vsce": "^3.9.0",
+    "esbuild": "^0.28.0",
+    "eslint": "^9.39.0",
+    "mocha": "^11.8.0",
+    "ovsx": "^1.3.0",
+    "prettier": "^3.6.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.0"
+  }
+}

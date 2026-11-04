@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <!-- Zed-like Agent Workspace icon: split-pane editor with agent sessions (original design). -->
+  <rect x="8" y="8" width="240" height="240" rx="48" fill="#1c1f24"/>
+  <rect x="8.5" y="8.5" width="239" height="239" rx="47.5" fill="none" stroke="#2e333b" stroke-width="1"/>
+  <!-- window frame -->
+  <rect x="36" y="48" width="184" height="160" rx="16" fill="#22262c" stroke="#3a404a" stroke-width="3"/>
+  <!-- title bar dots -->
+  <circle cx="54" cy="64" r="4" fill="#5f6672"/>
+  <circle cx="68" cy="64" r="4" fill="#5f6672"/>
+  <circle cx="82" cy="64" r="4" fill="#5f6672"/>
+  <line x1="36" y1="78" x2="220" y2="78" stroke="#3a404a" stroke-width="3"/>
+  <!-- split divider (accent) -->
+  <line x1="130" y1="78" x2="130" y2="208" stroke="#6fa3ea" stroke-width="4"/>
+  <!-- left pane: code lines -->
+  <rect x="50" y="96" width="34" height="8" rx="4" fill="#c69ae8"/>
+  <rect x="90" y="96" width="26" height="8" rx="4" fill="#cdd2da"/>
+  <rect x="62" y="116" width="44" height="8" rx="4" fill="#6fb1e6"/>
+  <rect x="62" y="136" width="24" height="8" rx="4" fill="#9ccb83"/>
+  <rect x="92" y="136" width="24" height="8" rx="4" fill="#e3a26e"/>
+  <rect x="62" y="156" width="36" height="8" rx="4" fill="#959dab"/>
+  <rect x="50" y="176" width="20" height="8" rx="4" fill="#c69ae8"/>
+  <!-- right pane: agent sessions -->
+  <g>
+    <circle cx="156" cy="106" r="11" fill="#c69ae8"/>
+    <path d="M156 99 L158.2 103.8 L163 106 L158.2 108.2 L156 113 L153.8 108.2 L149 106 L153.8 103.8 Z" fill="#1c1f24"/>
+    <rect x="174" y="102" width="32" height="8" rx="4" fill="#cdd2da"/>
+    <circle cx="156" cy="140" r="11" fill="#9ccb83"/>
+    <rect x="151" y="136" width="10" height="8" rx="2" fill="#1c1f24"/>
+    <rect x="174" y="136" width="24" height="8" rx="4" fill="#cdd2da"/>
+    <circle cx="156" cy="174" r="11" fill="#ddc078"/>
+    <path d="M158 167 L151 176 L156 176 L154 181 L161 172 L156 172 Z" fill="#1c1f24"/>
+    <rect x="174" y="170" width="28" height="8" rx="4" fill="#6fa3ea"/>
+  </g>
+</svg>
