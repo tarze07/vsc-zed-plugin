@@ -21,7 +21,7 @@ suite('Typography: getTypographySettings', () => {
       'editor.fontLigatures': false,
       'terminal.integrated.fontFamily': DEFAULT_TYPOGRAPHY.fontFamily,
       'terminal.integrated.fontSize': 14,
-      'terminal.integrated.lineHeight': 1.6,
+      'terminal.integrated.lineHeight': 1,
     });
   });
 
@@ -46,10 +46,14 @@ suite('Typography: getTypographySettings', () => {
     );
   });
 
-  test('converts pixel line height to a terminal multiplier', () => {
+  test('keeps the terminal line height at 1 regardless of the editor line height', () => {
     const settings = getTypographySettings(options({ fontSize: 16, lineHeight: 24 }));
     assert.strictEqual(settings['editor.lineHeight'], 24);
-    assert.strictEqual(settings['terminal.integrated.lineHeight'], 1.5);
+    assert.strictEqual(settings['terminal.integrated.lineHeight'], 1);
+    assert.strictEqual(
+      getTypographySettings(options({ lineHeight: 1.6 }))['terminal.integrated.lineHeight'],
+      1,
+    );
   });
 
   test('clamps font size to the allowed range', () => {

@@ -79,6 +79,9 @@ export function toEditorLineHeight(lineHeight: number): number {
 }
 
 /** Returns the VS Code settings for the given typography options (empty when disabled). */
+/** Line height of the integrated terminal set by the preset (VS Code default). */
+export const TERMINAL_LINE_HEIGHT = 1;
+
 export function getTypographySettings(options: TypographyOptions): Record<string, unknown> {
   if (!options.enabled) {
     return {};
@@ -93,7 +96,9 @@ export function getTypographySettings(options: TypographyOptions): Record<string
   if (options.applyToTerminal) {
     settings['terminal.integrated.fontFamily'] = options.fontFamily;
     settings['terminal.integrated.fontSize'] = fontSize;
-    settings['terminal.integrated.lineHeight'] = toTerminalLineHeight(options.lineHeight, fontSize);
+    // The terminal keeps VS Code's default spacing: the editor line height (e.g. 1.6 for code)
+    // makes agent TUIs look stretched, so it is not copied to the terminal.
+    settings['terminal.integrated.lineHeight'] = TERMINAL_LINE_HEIGHT;
   }
   return settings;
 }

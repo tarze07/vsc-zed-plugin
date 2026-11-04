@@ -2,7 +2,7 @@
   "name": "vsc-zed-plugin",
   "displayName": "Zed-like Agent Workspace",
   "description": "Zed-like layout, themes and multi-agent workspace for VS Code: run Claude Code, Codex, Agy and Kilo Code sessions side by side, in git worktrees, and review their changes.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "tarze07",
   "license": "GPL-3.0-only",
   "icon": "images/icon.png",
