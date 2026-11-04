@@ -7,11 +7,13 @@ import {
   shellFlavor,
   uniqueSessionName,
 } from './registry';
+import { SESSION_ID_ENV } from './sessionStore';
 import type {
   AgentDefinition,
   AgentSession,
   SessionLocation,
   SessionManager,
+  SessionRecord,
   SessionStatus,
   StartSessionOptions,
   StatusUpdate,
@@ -26,9 +28,48 @@ export interface SessionManagerOptions {
   registerCommands?: boolean;
 }
 
-interface SessionRecord {
+interface Entry {
   session: AgentSession;
   location: SessionLocation;
+}
+
+/**
+ * Why a session left the manager (#16 persistence):
+ * - `stopped`: `stop()` / `restart()` was called (explicit, the record is dropped);
+ * - `closed`: the terminal closed; `exitReason` (`vscode.TerminalExitReason`) tells whether the
+ *   user / the shell / an extension closed it or the window is shutting down.
+ */
+export interface SessionRemovedEvent {
+  readonly session: AgentSession;
+  readonly location: SessionLocation;
+  readonly cause: 'stopped' | 'closed';
+  readonly exitReason?: vscode.TerminalExitReason;
+}
+
+/** Extra API used by session persistence (#16); not part of the shared `SessionManager` contract. */
+export interface SessionManagerInternals {
+  /** Fires after a session was removed, before `onDidChangeSessions`. */
+  readonly onDidRemoveSession: vscode.Event<SessionRemovedEvent>;
+  /** Where the session terminal was opened. */
+  getLocation(id: string): SessionLocation | undefined;
+  /**
+   * Registers an existing (restored) terminal as a session with the record's id / name / agent,
+   * status `running`, WITHOUT sending any command. When the agent is no longer configured, a
+   * synthetic definition (`command: ''`) is used; `restart` then asks for an agent.
+   * Returns the existing session when the id or the terminal is already tracked.
+   */
+  adoptTerminal(terminal: vscode.Terminal, record: SessionRecord): AgentSession;
+}
+
+export function hasSessionManagerInternals(
+  sessions: SessionManager,
+): sessions is SessionManager & SessionManagerInternals {
+  const candidate = sessions as Partial<SessionManagerInternals>;
+  return (
+    typeof candidate.adoptTerminal === 'function' &&
+    typeof candidate.getLocation === 'function' &&
+    typeof candidate.onDidRemoveSession === 'function'
+  );
 }
 
 /**
@@ -126,11 +167,12 @@ function waitUntilActive(terminal: vscode.Terminal, timeoutMs: number): Promise<
 export function createSessionManager(
   _context: vscode.ExtensionContext,
   options: SessionManagerOptions = {},
-): SessionManager {
+): SessionManager & SessionManagerInternals {
   const emitter = new vscode.EventEmitter<void>();
+  const removedEmitter = new vscode.EventEmitter<SessionRemovedEvent>();
   /** Insertion order = creation order. */
-  const records = new Map<string, SessionRecord>();
-  const disposables: vscode.Disposable[] = [emitter];
+  const records = new Map<string, Entry>();
+  const disposables: vscode.Disposable[] = [emitter, removedEmitter];
   let counter = 0;
   let lastConfigErrors = '';
 
@@ -146,7 +188,19 @@ export function createSessionManager(
   const findByTerminal = (terminal: vscode.Terminal): AgentSession | undefined =>
     getSessions().find((s) => s.terminal === terminal);
 
-  const removeSession = (id: string): boolean => records.delete(id);
+  const removeSession = (
+    id: string,
+    cause: SessionRemovedEvent['cause'],
+    exitReason?: vscode.TerminalExitReason,
+  ): boolean => {
+    const entry = records.get(id);
+    if (!entry) {
+      return false;
+    }
+    records.delete(id);
+    removedEmitter.fire({ session: entry.session, location: entry.location, cause, exitReason });
+    return true;
+  };
 
   const clearAttention = (session: AgentSession): void => {
     if (session.needsAttention) {
@@ -217,10 +271,12 @@ export function createSessionManager(
         getSessions().map((s) => s.name),
       );
     const location = opts.location ?? readLocation();
+    const id = `${Date.now().toString(36)}-${++counter}`;
     const terminal = vscode.window.createTerminal({
       name,
       cwd,
-      env: agent.env,
+      // The marker lets #16 re-attach the terminal after a window reload.
+      env: { ...agent.env, [SESSION_ID_ENV]: id },
       iconPath: new vscode.ThemeIcon(agent.icon ?? 'hubot'),
       color: agent.color ? new vscode.ThemeColor(agent.color) : undefined,
       location:
@@ -228,7 +284,7 @@ export function createSessionManager(
     });
 
     const session: AgentSession = {
-      id: `${Date.now().toString(36)}-${++counter}`,
+      id,
       agent,
       name,
       terminal,
@@ -311,7 +367,7 @@ export function createSessionManager(
     if (!session) {
       return;
     }
-    removeSession(id);
+    removeSession(id, 'stopped');
     fire();
     session.terminal.dispose();
   };
@@ -323,7 +379,15 @@ export function createSessionManager(
     }
     const { session, location } = record;
     // Prefer the current definition of the agent; fall back to the one the session started with.
-    const agent = readAgents().agents.find((a) => a.id === session.agent.id) ?? session.agent;
+    let agent: AgentDefinition | undefined =
+      readAgents().agents.find((a) => a.id === session.agent.id) ?? session.agent;
+    if (agent.command === '') {
+      // Adopted session whose agent is no longer configured (#16): ask which agent to run.
+      agent = await pickAgent();
+      if (!agent || !records.has(id)) {
+        return undefined;
+      }
+    }
     stop(id);
     return launch(agent, {
       name: session.name,
@@ -355,6 +419,33 @@ export function createSessionManager(
     if (changed) {
       fire();
     }
+  };
+
+  const adoptTerminal = (terminal: vscode.Terminal, record: SessionRecord): AgentSession => {
+    const existing = getSession(record.id) ?? findByTerminal(terminal);
+    if (existing) {
+      return existing;
+    }
+    const agent: AgentDefinition = readAgents().agents.find((a) => a.id === record.agentId) ?? {
+      id: record.agentId,
+      label: record.agentLabel,
+      command: '',
+    };
+    const session: AgentSession = {
+      id: record.id,
+      agent,
+      name: record.name,
+      terminal,
+      cwd: record.cwd,
+      worktree: record.worktree,
+      // Fallback until shell integration events (#8) say otherwise.
+      status: 'running',
+      needsAttention: false,
+      createdAt: record.createdAt,
+    };
+    records.set(session.id, { session, location: record.location });
+    fire();
+    return session;
   };
 
   // ---- command helpers ------------------------------------------------------------------------
@@ -464,7 +555,7 @@ export function createSessionManager(
   disposables.push(
     vscode.window.onDidCloseTerminal((terminal) => {
       const session = findByTerminal(terminal);
-      if (session && removeSession(session.id)) {
+      if (session && removeSession(session.id, 'closed', terminal.exitStatus?.reason)) {
         fire();
       }
     }),
@@ -509,6 +600,9 @@ export function createSessionManager(
     stop,
     restart,
     setStatus,
+    onDidRemoveSession: removedEmitter.event,
+    getLocation: (id) => records.get(id)?.location,
+    adoptTerminal,
     dispose: () => {
       // Session terminals belong to the user — keep them open when the extension deactivates.
       records.clear();

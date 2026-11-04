@@ -80,6 +80,36 @@ Przykładowy skrót klawiszowy (`keybindings.json`):
 { "key": "ctrl+alt+[", "command": "zedLayout.agents.previous" }
 ```
 
+## Przywracanie sesji (`zedLayout.sessions.restoreOnStartup`)
+
+Metadane sesji (id, agent, nazwa, katalog, worktree, miejsce otwarcia, czas utworzenia, nazwa terminala) są zapisywane w stanie przestrzeni roboczej (`context.workspaceState`, klucz `zedLayout.sessions`, z numerem wersji schematu) przy każdej zmianie: start, zmiana nazwy, stop, restart. Dzięki temu po *Developer: Reload Window* (lub ponownym otwarciu folderu) sesje wracają na listę w widoku Agents.
+
+**Dopasowanie terminali po przeładowaniu.** Po aktywacji (`onStartupFinished`) rozszerzenie bierze terminale przywrócone przez VS Code (`window.terminals` oraz nowe terminale otwierane przez ~5 s) i dopasowuje je do zapisanych sesji — w kolejności:
+
+1. znacznik środowiska `ZED_LAYOUT_SESSION_ID` (ustawiany na każdym terminalu agenta; odczytywany z `terminal.creationOptions.env`, o ile VS Code go przekazuje),
+2. nazwa terminala + katalog roboczy (ścieżki porównywane po normalizacji, na Windows bez rozróżniania wielkości liter),
+3. sama nazwa — tylko gdy jest jednoznaczna (jeden terminal i jedna sesja o tej nazwie).
+
+Jeden terminal nigdy nie jest dopasowany dwa razy, a terminal ze znacznikiem innej (nieznanej) sesji nie jest dopasowywany po nazwie. Dopasowany terminal zostaje **przejęty** (adopted): sesja wraca z tym samym id, nazwą i agentem, **bez ponownego uruchamiania polecenia agenta**. Status startowy to `running`; dokładniejszy status pojawi się, gdy shell integration zgłosi kolejne polecenie (#8). Jeśli agenta nie ma już w `zedLayout.agents`, sesja działa dalej, a *Restart* zapyta, którego agenta uruchomić.
+
+**Sesje odłączone (detached).** Zapisane sesje, których terminal nie wrócił, trafiają do listy „odłączonych” w widoku Agents z akcjami:
+
+- *Resume* (`zedLayout.agents.resume`) — uruchamia nową sesję z tym samym agentem, nazwą, katalogiem i worktree (jeśli agenta nie ma w konfiguracji — QuickPick) i usuwa wpis z listy,
+- *Forget* (`zedLayout.agents.forget`) — usuwa wpis bez pytania; worktree (jeśli był) zostaje na dysku — usuniesz go w widoku Worktrees.
+
+Oba polecenia przyjmują rekord sesji, element drzewa `{ record }` albo id; bez argumentu pokazują QuickPick. Terminal przywrócony później niż po 5 s jest jeszcze przejmowany, ale tylko na podstawie znacznika `ZED_LAYOUT_SESSION_ID`.
+
+**Kiedy wpis znika.** Wpis jest usuwany przy *Stop*/*Restart*, *Forget*, *Resume* oraz gdy terminal zamknie użytkownik, proces powłoki lub inne rozszerzenie (`TerminalExitReason.User` / `Process` / `Extension`). Zamknięcie z powodu wyłączania lub przeładowania okna (`TerminalExitReason.Shutdown`) oraz dezaktywacja rozszerzenia **nie** usuwają wpisów — od pierwszego takiego zdarzenia żaden wpis nie jest już usuwany. Zamknięcie z nieznanego powodu (`Unknown`) przenosi sesję do odłączonych (bezpieczniej zapytać niż zgubić worktree).
+
+**Ustawienie.** `zedLayout.sessions.restoreOnStartup` (domyślnie `true`). Po wyłączeniu zapisane sesje nie są przejmowane ani pokazywane jako odłączone przy starcie (stare wpisy są odrzucane); bieżące sesje nadal są zapisywane, więc ponowne włączenie zadziała od następnego przeładowania.
+
+**Ograniczenia.**
+
+- Terminale musi przywrócić sam VS Code: wymagane `terminal.integrated.enablePersistentSessions` (domyślnie włączone). Bez tego wszystkie sesje po przeładowaniu będą odłączone.
+- Ciągłość procesu agenta zależy od ponownego podłączenia procesu terminala przez VS Code (persistent terminal process reconnection, `terminal.integrated.persistentSessionReviveProcess`). Gdy VS Code przywraca tylko zawartość ekranu z nową powłoką, sesja zostanie przejęta, ale agent w niej już nie działa — uruchom go przez *Restart*.
+- Po przejęciu status `running` jest tylko przybliżeniem do pierwszego zdarzenia shell integration; zakończenie agenta uruchomionego przed przeładowaniem może nie zostać wykryte.
+- Stan jest zapisywany per przestrzeń robocza; sesje z innych okien nie są widoczne.
+
 ## Rozwiązywanie problemów: „command … was not found on PATH”
 
 - Sprawdź w zwykłym terminalu: `which claude` (macOS/Linux) lub `Get-Command claude` (PowerShell). Wpisz w `command` pełną ścieżkę z wyniku.

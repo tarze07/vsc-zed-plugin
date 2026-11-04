@@ -1,7 +1,12 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
 
-import { createSessionManager, sessionIdFromArg } from '../agents/sessionManager';
+import {
+  createSessionManager,
+  sessionIdFromArg,
+  type SessionRemovedEvent,
+} from '../agents/sessionManager';
+import { SESSION_ID_ENV } from '../agents/sessionStore';
 import type { SessionManager } from '../agents/types';
 
 const EXTENSION_ID = 'tarze07.vsc-zed-plugin';
@@ -158,6 +163,60 @@ suite('Session manager', function () {
       await waitFor(() => manager.getSessions().length === 0);
     } finally {
       sub.dispose();
+    }
+  });
+
+  test('marks terminals with the session id and adopts existing terminals (#16)', async () => {
+    const context = { subscriptions: [] } as unknown as vscode.ExtensionContext;
+    const internal = createSessionManager(context, { registerCommands: false });
+    const removed: SessionRemovedEvent[] = [];
+    const sub = internal.onDidRemoveSession((e) => removed.push(e));
+    const terminal = vscode.window.createTerminal({
+      name: 'Zed Adopted',
+      location: vscode.TerminalLocation.Panel,
+    });
+    try {
+      const session = await internal.startSession({ agentId: AGENT_ID });
+      assert.ok(session);
+      const env = (session.terminal.creationOptions as vscode.TerminalOptions).env;
+      assert.strictEqual(env?.[SESSION_ID_ENV], session.id);
+      assert.strictEqual(internal.getLocation(session.id), 'panel');
+      internal.stop(session.id);
+      assert.strictEqual(removed.length, 1);
+      assert.strictEqual(removed[0].cause, 'stopped');
+
+      let changes = 0;
+      const changeSub = internal.onDidChangeSessions(() => changes++);
+      const record = {
+        id: 'adopted-1',
+        agentId: AGENT_ID,
+        agentLabel: 'Test Agent',
+        name: 'Zed Adopted',
+        location: 'panel' as const,
+        createdAt: 42,
+        terminalName: 'Zed Adopted',
+      };
+      const adopted = internal.adoptTerminal(terminal, record);
+      changeSub.dispose();
+      assert.strictEqual(changes, 1);
+      assert.strictEqual(adopted.id, 'adopted-1');
+      assert.strictEqual(adopted.status, 'running');
+      assert.strictEqual(adopted.createdAt, 42);
+      assert.strictEqual(adopted.agent.command, testAgent.command);
+      assert.strictEqual(internal.findByTerminal(terminal), adopted);
+      assert.strictEqual(internal.adoptTerminal(terminal, { ...record, id: 'other' }), adopted);
+
+      terminal.dispose();
+      await waitFor(() => internal.getSession('adopted-1') === undefined);
+      assert.strictEqual(removed[1]?.cause, 'closed');
+      assert.strictEqual(removed[1]?.exitReason, vscode.TerminalExitReason.Extension);
+    } finally {
+      sub.dispose();
+      terminal.dispose();
+      for (const s of internal.getSessions()) {
+        internal.stop(s.id);
+      }
+      internal.dispose();
     }
   });
 });
