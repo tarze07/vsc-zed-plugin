@@ -34,6 +34,15 @@ Szczegóły: [docs/LAYOUT.md](docs/LAYOUT.md) (lista zmienianych ustawień, back
 Side Bar), [docs/STATUS.md](docs/STATUS.md) (wykrywanie statusu) i
 [docs/WORKTREES.md](docs/WORKTREES.md) (sesje w worktree).
 
+### Profil VS Code (alternatywa dla „Apply”)
+
+Zamiast zmieniać bieżący profil, możesz zaimportować preset jako osobny profil VS Code:
+najpierw zainstaluj rozszerzenie z pliku `.vsix` (_Extensions: Install from VSIX..._), potem
+**Profiles: Import Profile...** i wskaż plik [`profiles/zed-like.code-profile`](profiles/zed-like.code-profile)
+lub URL `https://raw.githubusercontent.com/tarze07/vsc-zed-plugin/main/profiles/zed-like.code-profile`.
+Profil z własnymi ustawieniami `zedLayout.*` zapiszesz poleceniem **Zed Layout: Save Zed Layout as Profile File...**.
+Szczegóły: [docs/PROFILE.md](docs/PROFILE.md).
+
 ## Wymagania
 
 - [Node.js](https://nodejs.org/) 22 lub nowszy (z npm),
