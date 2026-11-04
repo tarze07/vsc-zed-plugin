@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="280" viewBox="0 0 480 280" font-family="system-ui, sans-serif" font-size="10">
+  <title>Zed-like layout: activity bar on top, project tree left, editor and agent tab in the middle, Agents view right</title>
+  <rect width="480" height="280" rx="10" fill="#1f2328"/>
+  <rect x="1" y="1" width="478" height="278" rx="10" fill="none" stroke="#2e333b"/>
+  <circle cx="16" cy="13" r="3.5" fill="#e06c75"/><circle cx="28" cy="13" r="3.5" fill="#d7b46a"/><circle cx="40" cy="13" r="3.5" fill="#8cc265"/>
+  <text x="240" y="16" fill="#959dab" text-anchor="middle">my-project</text>
+  <!-- left side bar -->
+  <rect x="0" y="26" width="110" height="238" fill="#22262c"/>
+  <g fill="#959dab"><rect x="10" y="34" width="10" height="10" rx="2"/><rect x="26" y="34" width="10" height="10" rx="2"/><rect x="42" y="34" width="10" height="10" rx="2"/></g>
+  <rect x="58" y="34" width="10" height="10" rx="2" fill="#6fa3ea"/>
+  <text x="10" y="64" fill="#959dab" font-size="8" letter-spacing=".5">PROJECT</text>
+  <g fill="#cdd2da"><text x="10" y="80">▾ src</text><text x="22" y="95">extension.ts</text><text x="22" y="110">agents.ts</text><text x="10" y="125">▸ docs</text><text x="10" y="140">package.json</text></g>
+  <rect x="0" y="86" width="110" height="13" fill="#2e4566" opacity=".7"/>
+  <text x="22" y="95" fill="#e6e9ee">extension.ts</text>
+  <!-- editor -->
+  <rect x="110" y="26" width="250" height="238" fill="#1c1f24"/>
+  <rect x="110" y="26" width="250" height="20" fill="#1f2328"/>
+  <rect x="110" y="26" width="80" height="20" fill="#1c1f24"/><rect x="110" y="26" width="80" height="2" fill="#6fa3ea"/>
+  <text x="120" y="40" fill="#e6e9ee">extension.ts</text>
+  <text x="200" y="40" fill="#959dab">✦ Claude Code</text>
+  <g font-family="ui-monospace, monospace" font-size="9">
+    <text x="120" y="66" fill="#6e7684">1</text><text x="136" y="66"><tspan fill="#b48ead">export</tspan><tspan fill="#cdd2da"> function </tspan><tspan fill="#6fa3ea">activate</tspan><tspan fill="#cdd2da">() {</tspan></text>
+    <text x="120" y="80" fill="#6e7684">2</text><text x="148" y="80" fill="#cdd2da">register(<tspan fill="#a3be8c">'agents'</tspan>);</text>
+    <text x="120" y="94" fill="#6e7684">3</text><text x="148" y="94" fill="#cdd2da">register(<tspan fill="#a3be8c">'review'</tspan>);</text>
+    <text x="120" y="108" fill="#6e7684">4</text><text x="136" y="108" fill="#cdd2da">}</text>
+  </g>
+  <!-- secondary side bar -->
+  <rect x="360" y="26" width="120" height="238" fill="#22262c"/>
+  <text x="370" y="44" fill="#959dab" font-size="8" letter-spacing=".5">AGENTS</text>
+  <g><circle cx="374" cy="61" r="4" fill="#c678dd"/><text x="384" y="64" fill="#cdd2da">Claude Code</text>
+     <circle cx="374" cy="79" r="4" fill="#d7b46a"/><text x="384" y="82" fill="#cdd2da">Codex</text>
+     <circle cx="374" cy="97" r="4" fill="#6e7684"/><text x="384" y="100" fill="#959dab">Kilo Code</text></g>
+  <!-- status bar -->
+  <rect x="0" y="264" width="480" height="16" fill="#1f2328"/>
+  <rect x="0" y="264" width="480" height="1" fill="#2e333b"/>
+  <text x="10" y="275" fill="#959dab" font-size="8">main</text><text x="470" y="275" fill="#959dab" font-size="8" text-anchor="end">Zed-like Dark</text>
+</svg>

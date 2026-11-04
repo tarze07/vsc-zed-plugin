@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="240" viewBox="0 0 480 240" font-family="system-ui, sans-serif" font-size="10">
+  <title>Agents view with parallel sessions, each in its own git worktree and branch</title>
+  <rect width="480" height="240" rx="10" fill="#1c1f24"/>
+  <rect x="1" y="1" width="478" height="238" rx="10" fill="none" stroke="#2e333b"/>
+  <rect x="12" y="12" width="236" height="216" rx="6" fill="#22262c"/>
+  <text x="24" y="32" fill="#959dab" font-size="8" letter-spacing=".5">AGENTS · 3 SESSIONS</text>
+  <text x="236" y="32" fill="#959dab" text-anchor="end">＋ ⑂</text>
+  <rect x="12" y="44" width="236" height="34" fill="#2e4566"/>
+  <circle cx="30" cy="61" r="5" fill="#c678dd"/>
+  <text x="42" y="58" fill="#e6e9ee">Claude Code · claude-1a2b3c</text><text x="42" y="71" fill="#959dab" font-size="8">running · agent/claude-1a2b3c</text>
+  <circle cx="30" cy="97" r="5" fill="#d7b46a"/>
+  <text x="42" y="94" fill="#cdd2da">Codex · codex-9f8e7d</text><text x="42" y="107" fill="#d7b46a" font-size="8">waiting · agent/codex-9f8e7d</text>
+  <circle cx="30" cy="133" r="5" fill="none" stroke="#6e7684" stroke-width="1.5"/>
+  <text x="42" y="130" fill="#cdd2da">Kilo Code</text><text x="42" y="143" fill="#959dab" font-size="8">exited</text>
+  <!-- worktree diagram -->
+  <g font-family="ui-monospace, monospace" font-size="9">
+    <text x="272" y="34" fill="#959dab">~/src/</text>
+    <text x="284" y="54" fill="#cdd2da">app/</text><text x="372" y="54" fill="#6e7684">main</text>
+    <text x="284" y="74" fill="#cdd2da">app.worktrees/</text>
+    <text x="298" y="94" fill="#c678dd">agent-claude-1a2b3c/</text>
+    <text x="298" y="114" fill="#d7b46a">agent-codex-9f8e7d/</text>
+  </g>
+  <path d="M276 58v56M276 78h18M288 78v36M288 98h8M288 118h8" stroke="#2e333b" fill="none"/>
+  <rect x="268" y="150" width="200" height="66" rx="6" fill="#22262c" stroke="#2e333b"/>
+  <text x="280" y="170" fill="#e6e9ee">Codex · codex-9f8e7d</text>
+  <text x="280" y="186" fill="#cdd2da">is waiting for input</text>
+  <rect x="404" y="192" width="52" height="16" rx="3" fill="#2f63b8"/><text x="430" y="203" fill="#ffffff" text-anchor="middle">Show</text>
+</svg>

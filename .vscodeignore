@@ -17,3 +17,4 @@ tsconfig.json
 *.vsix
 scripts/**
 profiles/**
+images/icon.svg

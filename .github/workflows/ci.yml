@@ -45,6 +45,9 @@ jobs:
       - name: Check formatting
         run: npm run format:check
 
+      - name: Check generated docs tables
+        run: node scripts/docs-tables.mjs --check
+
       - name: Typecheck
         run: npm run typecheck
 

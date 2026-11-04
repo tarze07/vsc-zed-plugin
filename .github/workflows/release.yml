@@ -1,0 +1,219 @@
+name: Release
+
+# Builds, tests and packages the extension, creates a GitHub Release with the .vsix and
+# publishes to the VS Code Marketplace and Open VSX. See docs/RELEASING.md.
+#
+# - push of a tag `v*`: full release (GitHub Release + Marketplace + Open VSX).
+# - workflow_dispatch: build/test/package only by default (dry run). Dispatching on a tag
+#   ref with `dry_run: false` re-runs the release/publish for that tag (e.g. after adding
+#   a missing secret).
+# Publishing to a store is skipped (with a notice) when its token secret is not set.
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run: build, test and package only (no GitHub Release, no publishing)'
+        type: boolean
+        default: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build, test & package
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      prerelease: ${{ steps.meta.outputs.prerelease }}
+      vsix: ${{ steps.meta.outputs.vsix }}
+      # Release/publish only for tag refs and when not a dry run.
+      release: ${{ steps.meta.outputs.release }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Release metadata
+        id: meta
+        env:
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        run: |
+          version=$(node -p "require('./package.json').version")
+          name=$(node -p "require('./package.json').name")
+          if [[ "$version" == *-* ]]; then prerelease=true; else prerelease=false; fi
+          if [[ "$GITHUB_REF_TYPE" == "tag" && "$DRY_RUN" != "true" ]]; then release=true; else release=false; fi
+          {
+            echo "version=$version"
+            echo "prerelease=$prerelease"
+            echo "vsix=$name-$version.vsix"
+            echo "release=$release"
+          } >> "$GITHUB_OUTPUT"
+          echo "Version $version, prerelease=$prerelease, release=$release (ref $GITHUB_REF_TYPE/$GITHUB_REF_NAME)"
+
+      # Tag must match package.json version (checked only for tag refs), CHANGELOG must have
+      # a section for the version, icon must be a valid PNG.
+      - name: Release check
+        run: npm run release:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Cache VS Code test downloads
+        uses: actions/cache@v4
+        with:
+          path: .vscode-test
+          key: vscode-test-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            vscode-test-${{ runner.os }}-
+
+      - name: Test (xvfb)
+        run: xvfb-run -a npm test
+
+      - name: Package extension
+        run: npm run package -- --out "${{ steps.meta.outputs.vsix }}"
+
+      - name: List package contents
+        run: unzip -l "${{ steps.meta.outputs.vsix }}"
+
+      - name: Release notes from CHANGELOG
+        run: node scripts/check-release.mjs --notes > release-notes.md
+
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vsix
+          path: |
+            ${{ steps.meta.outputs.vsix }}
+            release-notes.md
+          if-no-files-found: error
+
+  release:
+    name: GitHub Release
+    needs: build
+    if: needs.build.outputs.release == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download VSIX artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: vsix
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: v${{ needs.build.outputs.version }}
+          body_path: release-notes.md
+          prerelease: ${{ needs.build.outputs.prerelease == 'true' }}
+          fail_on_unmatched_files: true
+          files: |
+            ${{ needs.build.outputs.vsix }}
+            profiles/zed-like.code-profile
+
+  publish-marketplace:
+    name: Publish to VS Code Marketplace
+    needs: build
+    # The Marketplace does not accept semver pre-release versions (x.y.z-foo).
+    if: needs.build.outputs.release == 'true' && needs.build.outputs.prerelease != 'true'
+    runs-on: ubuntu-latest
+    env:
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+    steps:
+      - name: Skip (no VSCE_PAT secret)
+        if: env.VSCE_PAT == ''
+        run: echo "::notice title=Marketplace::VSCE_PAT secret is not set - skipping VS Code Marketplace publish (see docs/RELEASING.md)."
+
+      - name: Checkout
+        if: env.VSCE_PAT != ''
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        if: env.VSCE_PAT != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install dependencies
+        if: env.VSCE_PAT != ''
+        run: npm ci
+
+      - name: Download VSIX artifact
+        if: env.VSCE_PAT != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: vsix
+
+      # vsce reads the token from the VSCE_PAT environment variable.
+      - name: Publish
+        if: env.VSCE_PAT != ''
+        run: npx vsce publish --packagePath "${{ needs.build.outputs.vsix }}"
+
+  publish-openvsx:
+    name: Publish to Open VSX
+    needs: build
+    if: needs.build.outputs.release == 'true' && needs.build.outputs.prerelease != 'true'
+    runs-on: ubuntu-latest
+    env:
+      OVSX_PAT: ${{ secrets.OVSX_PAT }}
+    steps:
+      - name: Skip (no OVSX_PAT secret)
+        if: env.OVSX_PAT == ''
+        run: echo "::notice title=Open VSX::OVSX_PAT secret is not set - skipping Open VSX publish (see docs/RELEASING.md)."
+
+      - name: Checkout
+        if: env.OVSX_PAT != ''
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        if: env.OVSX_PAT != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install dependencies
+        if: env.OVSX_PAT != ''
+        run: npm ci
+
+      - name: Download VSIX artifact
+        if: env.OVSX_PAT != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: vsix
+
+      # ovsx reads the token from the OVSX_PAT environment variable.
+      - name: Publish
+        if: env.OVSX_PAT != ''
+        run: npx ovsx publish --packagePath "${{ needs.build.outputs.vsix }}"
