@@ -2,16 +2,29 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import type { AgentSession, SessionManager, WorktreeInfo } from '../agents/types';
+import type {
+  AgentSession,
+  OrphanTracker,
+  SessionHistory,
+  SessionManager,
+  WorktreeInfo,
+} from '../agents/types';
 import { gitErrorDetail } from './git';
 import { shortBranchName, type ChangedFile } from './model';
+import { createOrphanTracker } from './orphans';
 import { WorktreeService } from './service';
 
 /** Worktrees: `git worktree` management for isolated agent sessions (#9). */
 
 const BASE_SCHEME = 'zedlayout-worktree-base';
 
-export function register(context: vscode.ExtensionContext, sessions: SessionManager): void {
+export function register(
+  context: vscode.ExtensionContext,
+  sessions: SessionManager,
+  history: SessionHistory,
+): OrphanTracker {
+  const orphans = createOrphanTracker(context, sessions, history);
+  context.subscriptions.push(orphans);
   const service = new WorktreeService();
   const commands = new WorktreeCommands(service, sessions);
 
@@ -33,6 +46,7 @@ export function register(context: vscode.ExtensionContext, sessions: SessionMana
       commands.remove(arg),
     ),
   );
+  return orphans;
 }
 
 interface WorktreeSettings {

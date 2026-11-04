@@ -19,10 +19,10 @@ export function activate(context: vscode.ExtensionContext): void {
   layout.register(context);
   theme.register(context);
   profile.register(context);
-  const sessions = agents.register(context);
-  worktrees.register(context, sessions);
+  const { sessions, history } = agents.register(context);
+  const orphans = worktrees.register(context, sessions, history);
   review.register(context, sessions);
-  views.register(context, sessions);
+  views.register(context, sessions, history, orphans);
   keymap.register(context);
 }
 

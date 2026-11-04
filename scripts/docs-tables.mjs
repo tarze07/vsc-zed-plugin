@@ -34,6 +34,18 @@ const COMMAND_NOTES = {
   'zedLayout.worktrees.openInNewWindow': 'Otwiera katalog worktree w nowym oknie.',
   'zedLayout.worktrees.compareWithBase': 'Pokazuje zmiany worktree względem bazy (multi-diff).',
   'zedLayout.worktrees.remove': 'Bezpiecznie usuwa worktree (opcjonalnie także gałąź).',
+  'zedLayout.agents.resume':
+    'Wznawia sesję, której terminal nie został przywrócony po przeładowaniu okna.',
+  'zedLayout.agents.forget': 'Usuwa nieprzywróconą sesję z listy (bez usuwania worktree).',
+  'zedLayout.worktrees.orphan.startSession': 'Uruchamia agenta w osieroconym worktree.',
+  'zedLayout.worktrees.orphan.openInNewWindow': 'Otwiera osierocone worktree w nowym oknie.',
+  'zedLayout.worktrees.orphan.review':
+    'Pokazuje zmiany osieroconego worktree względem bazy (multi-diff).',
+  'zedLayout.worktrees.orphan.remove':
+    'Bezpiecznie usuwa osierocone worktree (opcjonalnie także gałąź).',
+  'zedLayout.worktrees.cleanUp':
+    'Zbiorcze sprzątanie worktree agentów bez sesji (wielokrotny wybór, `git worktree prune`).',
+  'zedLayout.worktrees.refreshOrphans': 'Ponownie wyszukuje osierocone worktree agentów.',
   'zedLayout.review.open': 'Pokazuje sesję w widoku Agent Changes i otwiera jej zmiany.',
   'zedLayout.review.refresh': 'Odświeża widok Agent Changes.',
   'zedLayout.review.openAll': 'Otwiera wszystkie zmiany sesji w jednym multi-diffie.',
@@ -77,6 +89,9 @@ const SETTING_NOTES = {
   'zedLayout.worktrees.directory':
     'Katalog na worktree; pusty: `../<repo>.worktrees`, ścieżki względne od katalogu repozytorium.',
   'zedLayout.worktrees.branchPrefix': 'Prefiks gałęzi tworzonych dla agentów.',
+  'zedLayout.sessions.restoreOnStartup':
+    'Po przeładowaniu okna ponownie podłącza sesje, których terminale VS Code przywrócił, i pokazuje te, których nie udało się przywrócić.',
+  'zedLayout.worktrees.showOrphaned': 'Pokazuje w widoku „Agents” worktree agentów bez sesji.',
   'zedLayout.review.acceptAllAction': 'Co robi *Accept All Changes*: pytaj, stage albo commit.',
   'zedLayout.keymap.enabled':
     'Włącza skróty klawiszowe w stylu Zeda (domyślnie wyłączone — nic nie jest nadpisywane).',

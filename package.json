@@ -53,7 +53,9 @@
     "workspace"
   ],
   "main": "./dist/extension.js",
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "contributes": {
     "commands": [
       {
@@ -204,6 +206,54 @@
         "command": "zedLayout.keymap.toggleProjectPanel",
         "title": "Toggle Project Panel",
         "category": "Zed Layout"
+      },
+      {
+        "command": "zedLayout.agents.resume",
+        "title": "Resume Agent Session",
+        "category": "Zed Layout",
+        "icon": "$(debug-continue)"
+      },
+      {
+        "command": "zedLayout.agents.forget",
+        "title": "Forget Agent Session",
+        "category": "Zed Layout",
+        "icon": "$(close)"
+      },
+      {
+        "command": "zedLayout.worktrees.orphan.startSession",
+        "title": "Start Agent Session in Worktree",
+        "category": "Zed Layout",
+        "icon": "$(play)"
+      },
+      {
+        "command": "zedLayout.worktrees.orphan.openInNewWindow",
+        "title": "Open Worktree in New Window",
+        "category": "Zed Layout",
+        "icon": "$(empty-window)"
+      },
+      {
+        "command": "zedLayout.worktrees.orphan.review",
+        "title": "Review Worktree Changes",
+        "category": "Zed Layout",
+        "icon": "$(diff-multiple)"
+      },
+      {
+        "command": "zedLayout.worktrees.orphan.remove",
+        "title": "Remove Worktree",
+        "category": "Zed Layout",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "zedLayout.worktrees.cleanUp",
+        "title": "Clean Up Agent Worktrees...",
+        "category": "Zed Layout",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "zedLayout.worktrees.refreshOrphans",
+        "title": "Refresh Orphaned Worktrees",
+        "category": "Zed Layout",
+        "icon": "$(refresh)"
       }
     ],
     "configuration": {
@@ -427,6 +477,16 @@
           "type": "boolean",
           "default": false,
           "description": "Enable Zed-style keyboard shortcuts for Zed Layout commands. When disabled, no default VS Code shortcuts are overridden."
+        },
+        "zedLayout.sessions.restoreOnStartup": {
+          "type": "boolean",
+          "default": true,
+          "description": "Re-attach agent sessions whose terminals VS Code restores after a window reload, and list sessions that could not be restored."
+        },
+        "zedLayout.worktrees.showOrphaned": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show agent worktrees that have no session in the Agents view."
         }
       }
     },
@@ -493,6 +553,16 @@
           "command": "zedLayout.review.refresh",
           "when": "view == zedLayout.agentChangesView",
           "group": "navigation@1"
+        },
+        {
+          "command": "zedLayout.worktrees.cleanUp",
+          "when": "view == zedLayout.agentsView",
+          "group": "9_cleanup@1"
+        },
+        {
+          "command": "zedLayout.worktrees.refreshOrphans",
+          "when": "view == zedLayout.agentsView",
+          "group": "9_cleanup@2"
         }
       ],
       "view/item/context": [
@@ -605,6 +675,56 @@
           "command": "zedLayout.review.reject",
           "when": "view == zedLayout.agentChangesView && viewItem =~ /^reviewFile/",
           "group": "1_file@3"
+        },
+        {
+          "command": "zedLayout.agents.resume",
+          "when": "view == zedLayout.agentsView && viewItem == detachedSession",
+          "group": "inline@1"
+        },
+        {
+          "command": "zedLayout.agents.forget",
+          "when": "view == zedLayout.agentsView && viewItem == detachedSession",
+          "group": "inline@2"
+        },
+        {
+          "command": "zedLayout.agents.resume",
+          "when": "view == zedLayout.agentsView && viewItem == detachedSession",
+          "group": "1_detached@1"
+        },
+        {
+          "command": "zedLayout.agents.forget",
+          "when": "view == zedLayout.agentsView && viewItem == detachedSession",
+          "group": "1_detached@2"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.startSession",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^orphanWorktree/",
+          "group": "inline@1"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.remove",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^orphanWorktree/",
+          "group": "inline@2"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.startSession",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^orphanWorktree/",
+          "group": "1_orphan@1"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.openInNewWindow",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^orphanWorktree/",
+          "group": "1_orphan@2"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.review",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^orphanWorktree/",
+          "group": "1_orphan@3"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.remove",
+          "when": "view == zedLayout.agentsView && viewItem =~ /^orphanWorktree/",
+          "group": "1_orphan@4"
         }
       ],
       "commandPalette": [
@@ -650,6 +770,30 @@
         },
         {
           "command": "zedLayout.review.reject",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.agents.resume",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.agents.forget",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.startSession",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.openInNewWindow",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.review",
+          "when": "false"
+        },
+        {
+          "command": "zedLayout.worktrees.orphan.remove",
           "when": "false"
         }
       ]

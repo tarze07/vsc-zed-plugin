@@ -97,3 +97,58 @@ export interface SessionManager extends vscode.Disposable {
   /** Used by status tracking (#8). No-op for unknown ids. */
   setStatus(id: string, status: SessionStatus, update?: StatusUpdate): void;
 }
+
+// ---------------------------------------------------------------------------
+// #16: persisted sessions and orphaned worktrees
+// ---------------------------------------------------------------------------
+
+/** Persisted metadata of an agent session (`context.workspaceState`, key `zedLayout.sessions`). */
+export interface SessionRecord {
+  id: string;
+  agentId: string;
+  /** Agent label at creation time (the agent may later disappear from config). */
+  agentLabel: string;
+  name: string;
+  cwd?: string;
+  worktree?: WorktreeInfo;
+  location: SessionLocation;
+  createdAt: number;
+  /** Terminal name used to match restored terminals after a window reload. */
+  terminalName: string;
+}
+
+/**
+ * Sessions recorded in a previous window whose terminal was NOT restored after reload
+ * ("detached"). Restored terminals are adopted back into `SessionManager` instead.
+ */
+export interface SessionHistory {
+  readonly onDidChange: vscode.Event<void>;
+  getDetached(): readonly SessionRecord[];
+  /** Record (live or detached) whose worktree path equals `path` (normalised comparison). */
+  findByWorktreePath(path: string): SessionRecord | undefined;
+  /** Starts a new live session from a detached record (same agent, name, cwd, worktree) and drops the record from the detached list. */
+  resume(id: string): Promise<AgentSession | undefined>;
+  /** Drops a detached record (does not touch worktrees). */
+  forget(id: string): void;
+}
+
+/** A worktree on an agent branch (`zedLayout.worktrees.branchPrefix`) with no live or detached session. */
+export interface OrphanedWorktree {
+  path: string;
+  /** Short branch name, e.g. "agent/claude-1a2b3c"; undefined when detached HEAD. */
+  branch?: string;
+  head: string;
+  repoRoot: string;
+  /** Base ref recorded at creation (git config `branch.<branch>.zedLayoutBase`), if known. */
+  baseRef?: string;
+  locked?: boolean;
+  /** Directory is missing (`git worktree prune` candidate). */
+  prunable?: boolean;
+}
+
+export interface OrphanTracker {
+  readonly onDidChange: vscode.Event<void>;
+  getOrphans(): readonly OrphanedWorktree[];
+  /** Re-scans repositories of the workspace folders. */
+  refresh(): Promise<void>;
+}
