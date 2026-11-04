@@ -1,0 +1,36 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": "$esbuild",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "label": "npm: build"
+    },
+    {
+      "type": "npm",
+      "script": "watch",
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": "$esbuild-watch",
+      "presentation": {
+        "reveal": "never"
+      },
+      "label": "npm: watch"
+    },
+    {
+      "type": "npm",
+      "script": "pretest",
+      "group": "test",
+      "problemMatcher": ["$tsc", "$esbuild"],
+      "label": "npm: pretest"
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "name": "vsc-zed-plugin",
+  "displayName": "Zed-like Agent Workspace",
+  "description": "Zed-like layout for VS Code with multi-agent sessions (Claude Code, Codex, Agy, Kilo Code).",
+  "version": "0.0.1",
+  "publisher": "tarze07",
+  "license": "GPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tarze07/vsc-zed-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tarze07/vsc-zed-plugin/issues"
+  },
+  "homepage": "https://github.com/tarze07/vsc-zed-plugin#readme",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "zed",
+    "layout",
+    "agents",
+    "ai",
+    "worktree"
+  ],
+  "extensionKind": [
+    "workspace"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "zedLayout.hello",
+        "title": "Hello",
+        "category": "Zed Layout"
+      }
+    ],
+    "configuration": {
+      "title": "Zed-like Agent Workspace",
+      "properties": {
+        "zedLayout.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable the Zed-like Agent Workspace extension features."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build -- --production",
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "compile-tests": "tsc -p . --outDir out",
+    "pretest": "npm run compile-tests && npm run build",
+    "test": "vscode-test",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.19.0",
+    "@types/vscode": "~1.95.0",
+    "@vscode/test-cli": "~0.0.12",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.9.0",
+    "esbuild": "^0.28.0",
+    "eslint": "^9.39.0",
+    "prettier": "^3.6.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.0"
+  }
+}
