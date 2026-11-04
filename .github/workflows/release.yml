@@ -39,7 +39,7 @@ jobs:
       release: ${{ steps.meta.outputs.release }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -122,7 +122,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Download VSIX artifact
         uses: actions/download-artifact@v4
@@ -156,7 +156,7 @@ jobs:
 
       - name: Checkout
         if: env.VSCE_PAT != ''
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
         if: env.VSCE_PAT != ''
@@ -194,7 +194,7 @@ jobs:
 
       - name: Checkout
         if: env.OVSX_PAT != ''
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
         if: env.OVSX_PAT != ''
