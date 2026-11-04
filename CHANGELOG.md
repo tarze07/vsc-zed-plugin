@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.1] - 2026-11-04
+
+### Fixed
+
+- Terminal line height is kept at `1` (VS Code default); the editor line height (1.6) is no longer copied to the terminal, so agent TUIs are not stretched.
+
+### Changed
+
+- **New Agent Session** asks for the agent, then for the directory it runs in: a workspace folder or any folder via the system dialog.
+
 ## [0.1.0] - 2026-11-04
 
 First preview release.
