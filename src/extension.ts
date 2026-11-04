@@ -16,10 +16,10 @@ export function activate(context: vscode.ExtensionContext): void {
 
   layout.register(context);
   theme.register(context);
-  agents.register(context);
-  worktrees.register(context);
+  const sessions = agents.register(context);
+  worktrees.register(context, sessions);
   review.register(context);
-  views.register(context);
+  views.register(context, sessions);
 }
 
 export function deactivate(): void {
