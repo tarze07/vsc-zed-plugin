@@ -37,6 +37,16 @@
         "command": "zedLayout.hello",
         "title": "Hello",
         "category": "Zed Layout"
+      },
+      {
+        "command": "zedLayout.apply",
+        "title": "Apply Zed Layout",
+        "category": "Zed Layout"
+      },
+      {
+        "command": "zedLayout.restore",
+        "title": "Restore Previous Layout",
+        "category": "Zed Layout"
       }
     ],
     "configuration": {
@@ -46,9 +56,97 @@
           "type": "boolean",
           "default": true,
           "description": "Enable the Zed-like Agent Workspace extension features."
+        },
+        "zedLayout.layout.scope": {
+          "type": "string",
+          "enum": [
+            "ask",
+            "user",
+            "workspace"
+          ],
+          "default": "ask",
+          "description": "Where `Apply Zed Layout` writes settings: ask each time, User settings, or Workspace settings."
+        },
+        "zedLayout.layout.confirmBeforeApply": {
+          "type": "boolean",
+          "default": true,
+          "description": "Ask for confirmation before changing settings."
+        },
+        "zedLayout.layout.activityBarLocation": {
+          "type": "string",
+          "enum": [
+            "top",
+            "hidden"
+          ],
+          "default": "top",
+          "description": "Activity Bar location applied by the preset."
+        },
+        "zedLayout.layout.hideBreadcrumbs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide breadcrumbs when applying the preset."
+        },
+        "zedLayout.layout.applyTheme": {
+          "type": "boolean",
+          "default": true,
+          "description": "Also switch the color theme when applying the preset."
+        },
+        "zedLayout.layout.theme": {
+          "type": "string",
+          "enum": [
+            "Zed-like Dark",
+            "Zed-like Light"
+          ],
+          "default": "Zed-like Dark",
+          "description": "Color theme applied by the preset (when `zedLayout.layout.applyTheme` is enabled)."
+        },
+        "zedLayout.typography.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Apply typography settings (fonts, line height, ligatures) as part of the preset."
+        },
+        "zedLayout.typography.fontFamily": {
+          "type": "string",
+          "default": "'IBM Plex Mono', 'Lilex', Menlo, Consolas, 'DejaVu Sans Mono', monospace",
+          "description": "Editor font family applied by the preset."
+        },
+        "zedLayout.typography.fontSize": {
+          "type": "number",
+          "default": 14,
+          "minimum": 6,
+          "maximum": 72,
+          "description": "Editor font size applied by the preset."
+        },
+        "zedLayout.typography.lineHeight": {
+          "type": "number",
+          "default": 1.6,
+          "minimum": 0,
+          "description": "Editor line height applied by the preset (values below 8 are a multiplier of font size)."
+        },
+        "zedLayout.typography.ligatures": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable font ligatures in the editor."
+        },
+        "zedLayout.typography.applyToTerminal": {
+          "type": "boolean",
+          "default": true,
+          "description": "Also apply the font family and size to the integrated terminal."
         }
       }
-    }
+    },
+    "themes": [
+      {
+        "label": "Zed-like Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/zed-like-dark-color-theme.json"
+      },
+      {
+        "label": "Zed-like Light",
+        "uiTheme": "vs",
+        "path": "./themes/zed-like-light-color-theme.json"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run build -- --production",
