@@ -5,6 +5,7 @@ import * as path from 'path';
 
 import { createGitRunner, GitError, type GitRunner } from '../worktrees/git';
 import { WorktreeService } from '../worktrees/service';
+import { removeTmpDir } from './tmpDir';
 
 const baseGit = createGitRunner();
 /** Runner with local identity / defaults so tests do not depend on the user's git config. */
@@ -63,8 +64,8 @@ suite('worktree service (git CLI)', function () {
   });
 
   teardown(() => {
-    // Windows may briefly lock files after git exits; retry instead of failing the test.
-    fs.rmSync(tmp, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
+    // Best-effort: Windows may keep the temp dir locked after git exits.
+    removeTmpDir(tmp);
   });
 
   test('getRepoRoot and currentRef', async () => {

@@ -7,6 +7,7 @@ import type { WorktreeInfo } from '../agents/types';
 import { chunk, GitReviewService, resolveInsideRoot } from '../review/service';
 import type { ReviewFile, ReviewTarget } from '../review/types';
 import { createGitRunner, type GitRunner } from '../worktrees/git';
+import { removeTmpDir } from './tmpDir';
 
 const baseGit = createGitRunner();
 /** Runner with local identity / defaults so tests do not depend on the user's git config. */
@@ -110,8 +111,8 @@ suite('review service (git CLI)', function () {
   });
 
   teardown(() => {
-    // Windows may briefly lock files after git exits; retry instead of failing the test.
-    fs.rmSync(tmp, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
+    // Best-effort: Windows may keep the temp dir locked after git exits.
+    removeTmpDir(tmp);
   });
 
   /** Makes every kind of change in the working tree of `root`. */
