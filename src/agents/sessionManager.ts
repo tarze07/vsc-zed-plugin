@@ -329,6 +329,70 @@ export function createSessionManager(
     return launch(agent, opts);
   };
 
+  /**
+   * Asks where the agent should run: one of the workspace folders, or any folder via the
+   * system dialog. Returns undefined when the user cancels.
+   */
+  const pickSessionDirectory = async (): Promise<string | undefined> => {
+    const folders = vscode.workspace.workspaceFolders ?? [];
+    type Choice = vscode.QuickPickItem & { folder?: string };
+    const items: Choice[] = folders.map((f) => ({
+      label: f.name,
+      description: f.uri.fsPath,
+      folder: f.uri.fsPath,
+    }));
+    items.push({
+      label: '$(folder-opened) Choose folder...',
+      description: 'Any folder on this computer',
+    });
+    const picked =
+      folders.length === 0
+        ? items[items.length - 1]
+        : await vscode.window.showQuickPick(items, {
+            title: 'Where should the agent run?',
+            placeHolder: 'Pick a workspace folder or choose another one',
+          });
+    if (!picked) {
+      return undefined;
+    }
+    if (picked.folder !== undefined) {
+      return picked.folder;
+    }
+    const chosen = await vscode.window.showOpenDialog({
+      canSelectFiles: false,
+      canSelectFolders: true,
+      canSelectMany: false,
+      openLabel: 'Start agent here',
+      defaultUri: folders[0]?.uri,
+    });
+    return chosen?.[0]?.fsPath;
+  };
+
+  /**
+   * Interactive start used by the New Agent Session command: asks for the agent first, then
+   * for the directory it runs in (unless `cwd` was given explicitly).
+   */
+  const startSessionInteractive = async (
+    opts: StartSessionOptions = {},
+  ): Promise<AgentSession | undefined> => {
+    if (opts.cwd !== undefined) {
+      return startSession(opts);
+    }
+    let agentId = opts.agentId;
+    if (agentId === undefined) {
+      const agent = await pickAgent();
+      if (!agent) {
+        return undefined;
+      }
+      agentId = agent.id;
+    }
+    const cwd = await pickSessionDirectory();
+    if (cwd === undefined) {
+      return undefined;
+    }
+    return startSession({ ...opts, agentId, cwd });
+  };
+
   const focus = (id: string): void => {
     const session = getSession(id);
     if (!session) {
@@ -498,7 +562,7 @@ export function createSessionManager(
   if (options.registerCommands !== false) {
     disposables.push(
       vscode.commands.registerCommand('zedLayout.agents.newSession', (arg?: unknown) =>
-        startSession(typeof arg === 'string' ? { agentId: arg } : {}),
+        startSessionInteractive(typeof arg === 'string' ? { agentId: arg } : {}),
       ),
       vscode.commands.registerCommand('zedLayout.agents.focus', async (arg?: unknown) => {
         const session = await resolveSessionArg(arg, 'Focus Agent Session');

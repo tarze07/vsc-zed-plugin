@@ -173,8 +173,8 @@ Mapowanie wysokości linii:
 
 - edytor: mnożnik (< 8) jest zachowany (minimum 1), wartość w pikselach (≥ 8) jest zaokrąglana;
   `0` oznacza wartość automatyczną VS Code;
-- terminal: `terminal.integrated.lineHeight` jest zawsze mnożnikiem — wartość pikselowa jest
-  dzielona przez rozmiar fontu (np. 24 px przy 16 px → 1.5), a wynik ograniczany do zakresu 1–3.
+- terminal: `terminal.integrated.lineHeight` jest zawsze `1` (domyślny odstęp VS Code). Interlinia
+  edytora nie jest kopiowana do terminala, bo przy `1.6` agenty CLI wyglądałyby na rozciągnięte.
 
 Nieprawidłowe wartości (zły typ, rozmiar spoza zakresu, ujemna wysokość linii, pusta rodzina
 fontów) są zastępowane domyślnymi (`readTypographyOptions()`).

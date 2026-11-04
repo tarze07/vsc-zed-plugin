@@ -54,7 +54,7 @@ Ustawienie dotyczy nowych sesji; *Restart* zachowuje miejsce, w którym sesja by
 
 1. Wybór agenta (QuickPick) — chyba że polecenie dostało `id` agenta.
 2. Sprawdzenie, czy `command` istnieje (`PATH`, na Windows także `PATHEXT`). Jeśli nie — komunikat błędu z przyciskiem *Open Settings*, terminal nie jest tworzony.
-3. Utworzenie zwykłego terminala ze skonfigurowaną powłoką: nazwa = `label` (kolejne: `label 2`, `label 3`, …), ikona, kolor, `env`, katalog roboczy = pierwszy folder przestrzeni roboczej (albo katalog worktree, #9).
+3. Utworzenie zwykłego terminala ze skonfigurowaną powłoką: nazwa = `label` (kolejne: `label 2`, `label 3`, …), ikona, kolor, `env`, katalog roboczy: polecenie *New Agent Session* pyta o katalog (lista folderów przestrzeni roboczej albo *Choose folder...* z oknem wyboru); worktree (#9) ma własny katalog.
 4. Wysłanie polecenia agenta do powłoki — przez Shell Integration (`executeCommand`), gdy pojawi się w ciągu ~3 s, w przeciwnym razie przez `sendText`. Dzięki temu po zakończeniu agenta powłoka pozostaje używalna, a wykrywanie statusu (#8) dostaje zdarzenia start/koniec polecenia.
 
 Argumenty są cytowane zgodnie z powłoką: POSIX (`'…'`, `'` → `'\''`), PowerShell na Windows (`'…'`, `'` → `''`, polecenie ze spacjami poprzedzone `&`), cmd.exe (`"…"`, gdy domyślną powłoką jest cmd).
