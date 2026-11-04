@@ -1,11 +1,11 @@
 # Plan: rozszerzenie VS Code „Zed-like Agent Workspace”
 
 > Odpowiedź na zgłoszenie [#1 „Plan na plugin”](https://github.com/tarze07/vsc-zed-plugin/issues/1).
-> Status: **propozycja do akceptacji**. Po akceptacji każdy punkt z sekcji „Proponowane zgłoszenia” zostanie założony jako osobne issue.
+> Status: **zaakceptowany** (2026-11-04). Punkty z sekcji „Zgłoszenia” założono jako osobne issues.
 
 ## 1. Cel
 
-Rozszerzenie do Visual Studio Code, które jednym poleceniem ustawia środowisko tak, by wyglądało i działało jak widok edytora Zed nastawiony na pracę z agentami AI — a przede wszystkim ułatwia **równoległą pracę z wieloma agentami** (Claude Code, Codex CLI, Gemini CLI, Copilot itp.).
+Rozszerzenie do Visual Studio Code, które jednym poleceniem ustawia środowisko tak, by wyglądało i działało jak widok edytora Zed nastawiony na pracę z agentami AI — a przede wszystkim ułatwia **równoległą pracę z wieloma agentami** (Claude Code, Codex, Agy, Kilo Code).
 
 Rozszerzenie nie jest klonem Zeda. Odtwarzamy **układ i sposób pracy** (minimalistyczny interfejs, panel agentów z boku, przegląd zmian agenta), korzystając wyłącznie z publicznego API VS Code.
 
@@ -42,14 +42,17 @@ Widok `Agents` w Secondary Side Bar (TreeView, w późniejszej fazie ewentualnie
 - **Lista sesji agentów** — każda sesja = nazwany terminal z ikoną i kolorem (`TerminalOptions.iconPath`, `color`), uruchamiający skonfigurowane polecenie (np. `claude`, `codex`, `gemini`).
 - Akcje: *New Agent Session* (wybór agenta z listy w ustawieniach), *Focus*, *Rename*, *Stop*, *Restart*.
 - **Status sesji**: działa / czeka na input / zakończona — na podstawie Shell Integration API (`onDidStartTerminalShellExecution`, `onDidEndTerminalShellExecution`) i aktywności wyjścia; badge z liczbą sesji wymagających uwagi.
-- Miejsce otwarcia terminala do wyboru: obszar edytora (karty obok kodu, jak wątki w Zed) albo panel na dole.
+- Sesje domyślnie otwierane jako **karty w obszarze edytora** (obok kodu, jak wątki w Zed); panel na dole jako opcja w ustawieniach.
 - Konfiguracja agentów w `settings.json`:
   ```jsonc
   "zedLayout.agents": [
-    { "id": "claude", "label": "Claude Code", "command": "claude", "icon": "sparkle", "color": "terminal.ansiMagenta" },
-    { "id": "codex",  "label": "Codex",       "command": "codex",  "icon": "robot",   "color": "terminal.ansiGreen" }
+    { "id": "claude", "label": "Claude Code", "command": "claude",   "icon": "sparkle", "color": "terminal.ansiMagenta" },
+    { "id": "codex",  "label": "Codex",       "command": "codex",    "icon": "robot",   "color": "terminal.ansiGreen" },
+    { "id": "agy",    "label": "Agy",         "command": "agy",      "icon": "rocket",  "color": "terminal.ansiBlue" },
+    { "id": "kilo",   "label": "Kilo Code",   "command": "kilocode", "icon": "zap",     "color": "terminal.ansiYellow" }
   ]
   ```
+- Domyślnie skonfigurowani agenci: **Claude Code, Codex, Agy, Kilo Code**. Polecenia uruchamiające są edytowalne (nazwa binarki może się różnić w zależności od instalacji).
 
 ### 3.4 Izolacja agentów — git worktree
 - Opcja „New Agent Session in Worktree”: tworzy `git worktree` na nowej gałęzi (np. `agent/<nazwa>-<krótki-id>`) w katalogu konfigurowalnym (domyślnie poza repo, np. `../<repo>.worktrees/`), uruchamia agenta z `cwd` w tym worktree.
@@ -75,6 +78,7 @@ Widok `Agents` w Secondary Side Bar (TreeView, w późniejszej fazie ewentualnie
 - Własna implementacja agenta / czat z modelem — integrujemy istniejące CLI.
 - Implementacja Agent Client Protocol (ACP) — kandydat na późniejszą fazę.
 - Kopiowanie zasobów graficznych, ikon czy motywów Zeda 1:1.
+- VS Code for the Web / Codespaces / vscode.dev — wspieramy **tylko VS Code na komputer** (`extensionKind: ["workspace"]`, wymagany lokalny `git` i CLI agentów).
 
 ## 5. Architektura techniczna
 - **Język/Build:** TypeScript, `esbuild`, `@types/vscode` (min. VS Code 1.95 — stabilne Shell Integration API i `vscode.changes`).
@@ -97,11 +101,11 @@ Widok `Agents` w Secondary Side Bar (TreeView, w późniejszej fazie ewentualnie
 |---|---|---|
 | **M0 – Szkielet** | scaffolding, build, lint, CI, README | Pustą wtyczkę da się zbudować i uruchomić |
 | **M1 – Układ i wygląd** | preset układu + restore, motywy, typografia | „Wygląda jak Zed” |
-| **M2 – Panel agentów** | konfiguracja agentów, sesje terminalowe, statusy, widok w Secondary Side Bar | Wygodne prowadzenie wielu agentów naraz |
-| **M3 – Worktree i Review** | sesje w worktree, widok zmian, accept/reject | Bezpieczna równoległa praca agentów |
+| **M2 – Panel agentów i worktree** | konfiguracja agentów, sesje terminalowe (karty edytora), sesje w git worktree, statusy, widok w Secondary Side Bar | Wiele agentów naraz, każdy w izolacji |
+| **M3 – Review** | widok zmian, multi-diff, accept/reject | Wygodny przegląd pracy agentów |
 | **M4 – Szlif i wydanie** | keymap, walkthrough, dokumentacja, publikacja | Wersja 0.1.0 |
 
-## 7. Proponowane zgłoszenia (do założenia po akceptacji)
+## 7. Zgłoszenia
 
 1. **[M0] Szkielet rozszerzenia** — TypeScript + esbuild, `package.json` z kontrybucjami, ESLint/Prettier, `F5` debug, README.
 2. **[M0] CI w GitHub Actions** — build, lint, testy z xvfb, artefakt `.vsix`.
@@ -111,7 +115,7 @@ Widok `Agents` w Secondary Side Bar (TreeView, w późniejszej fazie ewentualnie
 6. **[M2] Konfiguracja agentów (`zedLayout.agents`) + polecenie „New Agent Session”.**
 7. **[M2] Widok „Agents” w Secondary Side Bar** — lista sesji, focus/rename/stop/restart.
 8. **[M2] Wykrywanie statusu sesji agenta** (Shell Integration) + badge „wymaga uwagi”.
-9. **[M3] Sesje agentów w git worktree** — tworzenie, otwieranie, usuwanie z zabezpieczeniami.
+9. **[M2] Sesje agentów w git worktree** — tworzenie, otwieranie, usuwanie z zabezpieczeniami.
 10. **[M3] Widok „Agent Changes” + multi-diff + accept/reject.**
 11. **[M4] Zestaw skrótów klawiszowych w stylu Zeda (opcjonalny).**
 12. **[M4] Walkthrough pierwszego uruchomienia i dokumentacja użytkownika.**
@@ -120,8 +124,8 @@ Widok `Agents` w Secondary Side Bar (TreeView, w późniejszej fazie ewentualnie
 ## 8. Ryzyka i otwarte pytania
 - **Brak API do pełnej kontroli układu** — część ustawień (np. pozycja konkretnych widoków) da się zmienić tylko poleceniami `workbench.action.*`, a VS Code zapamiętuje układ per workspace. Preset może wymagać jednorazowego „ułożenia” przy pierwszym otwarciu workspace.
 - **Wykrywanie stanu agenta „czeka na input”** jest heurystyczne (zależy od CLI); dopuszczamy, by w v0.1 status był uproszczony (działa / zakończony).
-- **Pytania do zatwierdzenia:**
-  1. Którzy agenci mają być domyślnie skonfigurowani (Claude Code, Codex, Gemini CLI, inne)?
-  2. Czy sesje agentów domyślnie otwierać jako karty w obszarze edytora, czy w panelu terminala?
-  3. Czy worktree mają być w M3, czy przesunąć je wcześniej (są kluczowe dla pracy wieloagentowej)?
-  4. Docelowe platformy: tylko desktop, czy także VS Code for the Web / Codespaces?
+- **Decyzje (odpowiedzi na pytania z planu):**
+  1. Domyślni agenci: Claude Code, Codex, Agy, Kilo Code.
+  2. Sesje agentów otwierane jako karty obok kodu (obszar edytora).
+  3. Worktree przesunięte z M3 do M2 — razem z sesjami agentów.
+  4. Tylko VS Code na komputer.
